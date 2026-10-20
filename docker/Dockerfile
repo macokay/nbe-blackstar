@@ -1,4 +1,4 @@
-FROM python:3.13-alpine
+FROM python:3.14-alpine
 
 # pinned runtime dependencies (paho-mqtt 2.x uses the VERSION2 callback API)
 COPY requirements.txt /tmp/requirements.txt
