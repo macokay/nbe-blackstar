@@ -18,6 +18,7 @@ ENV_SETTINGS = {
     "ha_prefix": ("HA_PREFIX", str, "homeassistant"),
     "device_id": ("NBE_DEVICE_ID", str, ""),
     "device_name": ("NBE_DEVICE_NAME", str, "NBE Black Star"),
+    "lang": ("NBE_LANG", str, "da"),
 }
 
 
@@ -41,6 +42,8 @@ def load(config_file, environ):
             if default is None:
                 raise SystemExit("%s environment variable is required" % env)
             config[key] = default
+    if config["lang"] not in ("da", "en"):
+        raise SystemExit("NBE_LANG must be da or en")
     if not config.get("device_id"):
         config["device_id"] = "nbe_" + str(config["nbe_serial"])
     return config

@@ -48,7 +48,7 @@ class Device:
 
 
 class Sensor:
-    def __init__(self, icon, device_class, unit_of_measurement, state_class, name, device, object_id):
+    def __init__(self, icon, device_class, unit_of_measurement, state_class, name, device, object_id, topic_key=None):
         if icon != "none":
             self.icon = icon
         if device_class != "none":
@@ -58,7 +58,8 @@ class Sensor:
         if state_class != "none":
             self.state_class = state_class
         self.name = name
-        self.state_topic = device.getUid() + "/sensor/" + strip_invalid(name) + "/state"
+        self.topic_key = topic_key or strip_invalid(name)
+        self.state_topic = device.getUid() + "/sensor/" + self.topic_key + "/state"
         self.availability_topic = device.getUid() + "/bridge/state"
         self.unique_id = device.getId() + "_" + object_id
         self.default_entity_id = "sensor.nbe_" + object_id
@@ -66,20 +67,21 @@ class Sensor:
         self.origin = ORIGIN
 
     def getUid(self):
-        return strip_invalid(self.name)
+        return self.topic_key
 
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=8)
 
 
 class BinarySensor:
-    def __init__(self, icon, device_class, name, device, object_id):
+    def __init__(self, icon, device_class, name, device, object_id, topic_key=None):
         if icon != "none":
             self.icon = icon
         if device_class != "none":
             self.device_class = device_class
         self.name = name
-        self.state_topic = device.getUid() + "/binary_sensor/" + strip_invalid(name) + "/state"
+        self.topic_key = topic_key or strip_invalid(name)
+        self.state_topic = device.getUid() + "/binary_sensor/" + self.topic_key + "/state"
         self.availability_topic = device.getUid() + "/bridge/state"
         self.payload_on = "ON"
         self.payload_off = "OFF"
@@ -89,7 +91,7 @@ class BinarySensor:
         self.origin = ORIGIN
 
     def getUid(self):
-        return strip_invalid(self.name)
+        return self.topic_key
 
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=8)

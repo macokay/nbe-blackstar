@@ -41,6 +41,7 @@ Every setting comes from an environment variable. `config.json` is optional and 
 | `HA_PREFIX` | no | `homeassistant` | Home Assistant discovery prefix. |
 | `NBE_DEVICE_ID` | no | `nbe_<serial>` | Device id. Keeps entity topics stable when changed. |
 | `NBE_DEVICE_NAME` | no | `NBE Black Star` | Device name in Home Assistant. |
+| `NBE_LANG` | no | `da` | Entity names: `da` or `en`. Topics and entity ids do not change with the language. |
 | `NBE_DEBUG` | no | `false` | Debug logging. |
 | `NBE_ALLOW_WRITE` | no | unset | Leave unset. Writes are not implemented in this build. |
 

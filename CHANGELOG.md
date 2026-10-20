@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.2
+- `NBE_LANG=da|en` selects the entity names (default `da`). MQTT topics and entity ids stay the same in both languages.
+- `pycryptodome` 4.0.0 (verified against a live controller) and Python 3.14 in the Docker image.
+
 ## 0.0.1 (first release)
 - Package `nbe_blackstar` (`python -m nbe_blackstar`). Modules: `bridge`, `protocol`, `frames`, `ha_classes`, `settings`.
 - Configuration from environment variables; `config.json` optional. Secrets are environment-only.
