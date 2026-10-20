@@ -1,0 +1,15 @@
+services:
+    nbe:
+        container_name: nbe
+        build:
+            context: .
+            dockerfile: docker/Dockerfile
+        image: nbe:aarch64
+        hostname: nbe
+        restart: unless-stopped
+        env_file: .env.local
+        volumes:
+            - nbe-data:/var/lib/nbe
+
+volumes:
+    nbe-data:

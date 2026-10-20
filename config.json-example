@@ -1,0 +1,12 @@
+{
+"nbe_serial": "123456",
+"nbe_ip": "192.0.2.10",
+"nbe_port": 8483,
+"mqtt_server": "192.0.2.20",
+"mqtt_port": 1883,
+"mqtt_user": "nbe-client",
+"mqtt_client_name": "pellet-burner",
+"debug": false,
+"refresh_rate": 60,
+"ha_prefix": "homeassistant"
+}

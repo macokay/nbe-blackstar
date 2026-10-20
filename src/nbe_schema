@@ -1,0 +1,23 @@
+# RESOURCE,METHOD,TYPE,NAME,ICON,STATE-CLASS,DEVICE-CLASS,UNIT-OF-MEASUREMENT,OBJECT_ID
+# OBJECT_ID is the ASCII entity id suffix (sensor.nbe_<OBJECT_ID>), NAME is shown in Home Assistant.
+operating_data/boiler_temp,get,sensor,Kedeltemperatur,none,measurement,temperature,°C,kedel_temperatur
+operating_data/boiler_ref,get,sensor,Kedel mål,none,measurement,temperature,°C,kedel_maal
+operating_data/dhw_temp,get,sensor,Varmtvand,mdi:water-boiler,measurement,temperature,°C,varmtvand
+operating_data/dhw_ref,get,sensor,Varmtvand mål,mdi:water-boiler,measurement,temperature,°C,varmtvand_maal
+operating_data/forward_temp,get,sensor,Gulvvarme fremløb,mdi:heating-coil,measurement,temperature,°C,gulv_fremloeb
+operating_data/forward_ref,get,sensor,Gulvvarme ønsket,mdi:heating-coil,measurement,temperature,°C,gulv_oensket
+operating_data/shaft_temp,get,sensor,Skakttemperatur,none,measurement,temperature,°C,skakt_temperatur
+operating_data/external_temp,get,sensor,Udetemperatur,none,measurement,temperature,°C,udetemperatur
+operating_data/power_kw,get,sensor,Brændereffekt,mdi:flash,measurement,power,kW,braendereffekt_kw
+operating_data/power_pct,get,sensor,Brænderbelastning,mdi:percent,measurement,none,%,braenderbelastning
+operating_data/oxygen,get,sensor,Ilt,mdi:percent,measurement,none,%,ilt
+operating_data/oxygen_ref,get,sensor,Ilt mål,mdi:percent,measurement,none,%,ilt_maal
+operating_data/house_valve_state,get,sensor,Gulvventil,mdi:heating-coil,measurement,none,%,gulv_ventil
+operating_data/content,get,sensor,Pellets i magasin,mdi:weight-kilogram,measurement,none,kg,pellets_magasin
+operating_data/ashbox_minutes,get,sensor,Askeskuffe minutter,mdi:timer-outline,measurement,duration,min,askeskuffe_minutter
+operating_data/state,get,sensor,Driftstilstand,mdi:fire,measurement,none,none,driftstilstand
+operating_data/photo_level,get,sensor,Lysniveau,mdi:brightness-6,measurement,none,%,lysniveau
+operating_data/boiler_pump_state,get,binary_sensor,Kedelpumpe,mdi:pump,none,running,none,kedelpumpe
+operating_data/house_pump_state,get,binary_sensor,Gulvpumpe,mdi:pump,none,running,none,gulvpumpe
+operating_data/off_on_alarm,get,binary_sensor,Alarm,mdi:alert,none,problem,none,alarm
+consumption_data/counter,get,sensor,Pellet forbrug teller,mdi:counter,total_increasing,none,none,forbrug_teller

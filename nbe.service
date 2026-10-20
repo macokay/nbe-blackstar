@@ -1,0 +1,22 @@
+[Unit]
+Description=NBE Pellet burner MQTT bridge
+After=network.target
+
+[Service]
+Type=simple
+User=nbe
+Group=nbe
+WorkingDirectory=/opt/nbe
+EnvironmentFile=/etc/nbe/nbe.env
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/nbe/venv/bin/python3 /opt/nbe/nbe.py
+Restart=always
+RestartSec=10
+NoNewPrivileges=yes
+ProtectSystem=strict
+StateDirectory=nbe
+ProtectHome=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target
