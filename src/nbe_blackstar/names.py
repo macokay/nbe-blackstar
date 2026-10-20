@@ -21,6 +21,7 @@ EN = {
     "gulvpumpe": "Floor pump",
     "alarm": "Alarm",
     "forbrug_teller": "Pellet consumption counter",
+    "braender_energi_kwh": "Burner energy",
 }
 
 

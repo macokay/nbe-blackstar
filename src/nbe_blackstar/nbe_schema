@@ -21,3 +21,4 @@ operating_data/boiler_pump_state,get,binary_sensor,Kedelpumpe,mdi:pump,none,runn
 operating_data/house_pump_state,get,binary_sensor,Gulvpumpe,mdi:pump,none,running,none,gulvpumpe
 operating_data/off_on_alarm,get,binary_sensor,Alarm,mdi:alert,none,problem,none,alarm
 consumption_data/counter,get,sensor,Pellet forbrug teller,mdi:counter,total_increasing,none,none,forbrug_teller
+energy/burner_kwh,get,sensor,Brænderenergi,mdi:lightning-bolt,total_increasing,energy,kWh,braender_energi_kwh
