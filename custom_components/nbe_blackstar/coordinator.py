@@ -5,7 +5,7 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity, DataUpdateCoordinator, UpdateFailed
 
 from .api import NbeReader
-from .const import CONF_LANG, CONF_SERIAL, DEFAULT_LANG, DOMAIN
+from .const import CONF_DEVICE_NAME, CONF_LANG, CONF_SERIAL, DEFAULT_DEVICE_NAME, DEFAULT_LANG, DOMAIN
 
 log = logging.getLogger(__name__)
 
@@ -36,7 +36,7 @@ class NbeEntity(CoordinatorEntity):
         self._object_id = object_id
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, serial)},
-            name="NBE Black Star",
+            name=entry.data.get(CONF_DEVICE_NAME, DEFAULT_DEVICE_NAME),
             manufacturer="NBE",
             model="Black Star 1016 (V7)",
             sw_version=coordinator.firmware,

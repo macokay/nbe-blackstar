@@ -9,7 +9,8 @@
           "serial": "Serial number",
           "pincode": "Pincode",
           "port": "Port",
-          "lang": "Entity name language (da or en)"
+          "lang": "Entity name language (da or en)",
+          "device_name": "Device name"
         },
         "data_description": {
           "serial": "Shown in menu 18 on the burner display.",

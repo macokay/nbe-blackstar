@@ -85,3 +85,17 @@ async def test_english_names_use_same_entity_ids(hass, fake_controller):
     assert temp is not None
     assert temp.attributes["friendly_name"].endswith("Boiler temperature")
 
+
+
+async def test_device_name_comes_from_config(hass, fake_controller):
+    entry = MockConfigEntry(
+        domain="nbe_blackstar",
+        data={"host": "192.0.2.10", "serial": "123456", "pincode": "123456", "port": 8483, "device_name": "Kedel"},
+        options={"lang": "da"},
+    )
+    entry.add_to_hass(hass)
+    assert await async_setup_component(hass, "nbe_blackstar", {})
+    await hass.async_block_till_done()
+    temp = hass.states.get("sensor.nbe_kedel_temperatur")
+    assert temp is not None
+    assert temp.attributes["friendly_name"].startswith("Kedel ")
