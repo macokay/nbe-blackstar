@@ -8,6 +8,8 @@ log = logging.getLogger("nbe_blackstar")
 
 # a gap longer than this (bridge or controller down) adds nothing, so an outage does not count as burning
 MAX_GAP_S = 3600
+# the total is written every Nth update (and on flush) to spare SD cards
+SAVE_EVERY = 10
 
 
 class EnergyMeter:
@@ -15,6 +17,7 @@ class EnergyMeter:
         self.path = path
         self.kwh = 0.0
         self.last = None
+        self._pending = 0
         self._load()
 
     def _load(self):
@@ -42,6 +45,11 @@ class EnergyMeter:
             os.replace(tmp, self.path)
         except OSError as e:
             log.warning("Unable to write energy total %s: %s", self.path, e)
+            return
+        self._pending = 0
+
+    def flush(self):
+        self._save()
 
     def update(self, power_kw, now):
         if self.last is not None and power_kw is not None:
@@ -49,5 +57,7 @@ class EnergyMeter:
             if 0 < gap <= MAX_GAP_S:
                 self.kwh += max(power_kw, 0.0) * gap / 3600
         self.last = now
-        self._save()
+        self._pending += 1
+        if self._pending >= SAVE_EVERY:
+            self._save()
         return self.kwh

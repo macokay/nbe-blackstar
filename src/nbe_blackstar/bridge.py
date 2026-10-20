@@ -261,6 +261,15 @@ def on_connect(client, userdata, flags, reason_code, properties):
     populate_resources(client)
 
 
+def shutdown(client):
+    log.info("Stopping")
+    energy_meter.flush()
+    client.publish(device.getUid() + "/bridge/state", "offline", 0, True)
+    client.loop_stop()
+    client.disconnect()
+    return 0
+
+
 def start():
     settings.init()
     global device
@@ -291,8 +300,4 @@ def start():
             log.debug("Cycle done")
             time.sleep(settings.config["refresh_rate"])
     except KeyboardInterrupt:
-        log.info("Stopping")
-        client.publish(device.getUid() + "/bridge/state", "offline", 0, True)
-        client.loop_stop()
-        client.disconnect()
-        return 0
+        return shutdown(client)
