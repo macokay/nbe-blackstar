@@ -56,3 +56,24 @@ def test_refresh_publishes_burner_energy(monkeypatch):
     energy_topics = [t for t in published if "energi" in t or "energy" in t]
     assert len(energy_topics) == 1
     assert published[energy_topics[0]] == "0.000"
+
+
+def test_non_object_json_starts_at_zero(tmp_path):
+    path = tmp_path / "energy.json"
+    path.write_text("[]")
+    assert EnergyMeter(str(path)).kwh == 0.0
+
+
+def test_non_finite_total_starts_at_zero(tmp_path):
+    path = tmp_path / "energy.json"
+    path.write_text('{"kwh": NaN}')
+    assert EnergyMeter(str(path)).kwh == 0.0
+
+
+def test_save_replaces_file_and_leaves_no_temp_file(tmp_path):
+    path = tmp_path / "energy.json"
+    meter = EnergyMeter(str(path))
+    meter.update(3.0, 0)
+    meter.update(3.0, 1200)
+    assert json.load(open(path))["kwh"] == 1.0
+    assert not (tmp_path / "energy.json.tmp").exists()

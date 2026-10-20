@@ -20,7 +20,9 @@ PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR]
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     data = entry.data
     energy_path = hass.config.path(ENERGY_FILE.format(serial=data[CONF_SERIAL]))
-    reader = NbeReader(data[CONF_HOST], data[CONF_SERIAL], data[CONF_PINCODE], data[CONF_PORT], energy_path)
+    reader = await hass.async_add_executor_job(
+        NbeReader, data[CONF_HOST], data[CONF_SERIAL], data[CONF_PINCODE], data[CONF_PORT], energy_path
+    )
     interval = entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
     coordinator = NbeCoordinator(hass, entry, reader, interval)
     coordinator.firmware = await hass.async_add_executor_job(reader.read_firmware)

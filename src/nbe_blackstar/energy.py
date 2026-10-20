@@ -1,6 +1,8 @@
 # Burner energy: integrates the controller's power (kW) into kWh for the Home Assistant Energy dashboard.
 import json
 import logging
+import math
+import os
 
 log = logging.getLogger("nbe_blackstar")
 
@@ -23,15 +25,21 @@ class EnergyMeter:
                 self.kwh = float(json.load(f)["kwh"])
         except FileNotFoundError:
             return
-        except (OSError, ValueError, KeyError) as e:
+        except (OSError, ValueError, KeyError, TypeError) as e:
             log.warning("Unable to read energy total %s, starting at 0: %s", self.path, e)
+            return
+        if not math.isfinite(self.kwh):
+            log.warning("Energy total in %s is not a number, starting at 0", self.path)
+            self.kwh = 0.0
 
     def _save(self):
         if self.path is None:
             return
+        tmp = self.path + ".tmp"
         try:
-            with open(self.path, "w") as f:
+            with open(tmp, "w") as f:
                 json.dump({"kwh": round(self.kwh, 4)}, f)
+            os.replace(tmp, self.path)
         except OSError as e:
             log.warning("Unable to write energy total %s: %s", self.path, e)
 
