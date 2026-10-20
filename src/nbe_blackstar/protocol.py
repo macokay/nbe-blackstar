@@ -17,21 +17,23 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from __future__ import print_function
-import os
-import socket
-from random import randrange
-import time
-from Crypto.PublicKey import RSA
+
 import base64
-from .frames import Request_frame, Response_frame
-from os import urandom
-from random import SystemRandom, randrange
+import os
 import select
+import socket
+import time
+from random import randrange
+
+from Crypto.PublicKey import RSA
+
+from .frames import Request_frame, Response_frame
+
 #import xtea
 
 class Proxy:
     root = ('settings', 'operating_data', 'advanced_data', 'consumption_data', 'event_log','sw_versions','info')
-    settings = ('boiler', 'hot_water', 'regulation', 'weather', 'weather2', 'oxygen', 'cleaning', 'hopper', 'fan', 'auger', 'ignition', 'pump', 
+    settings = ('boiler', 'hot_water', 'regulation', 'weather', 'weather2', 'oxygen', 'cleaning', 'hopper', 'fan', 'auger', 'ignition', 'pump',
         'sun', 'vacuum', 'misc', 'alarm', 'manual')
     consumption_data = ('total_hours', 'total_days', 'total_months', 'total_years', 'dhw_hours', 'dhw_days', 'dhw_months', 'dhw_years', 'counter')
 
@@ -89,7 +91,7 @@ class Proxy:
 
     def get(self, d=None):
         d = d.rstrip('/').split('/')
-        if d[0] == None or d[0] == '*':
+        if d[0] is None or d[0] == '*':
             return [p + '/' for p in self.root]
         elif d[0] == 'settings':
             if len(d) == 1:
@@ -153,7 +155,7 @@ class Proxy:
         if os.environ.get('NBE_ALLOW_WRITE') != 'true':
             raise PermissionError('NBE write disabled, set NBE_ALLOW_WRITE=true to enable')
         d = path.rstrip('/').split('/')
-        if d[0] == None or d[0] == '*':
+        if d[0] is None or d[0] == '*':
             return ('settings',)
         elif len(d) == 3 and d[1] in self.settings and value is not None :
             self.s.settimeout(5)
@@ -192,62 +194,3 @@ class Proxy:
 
     def __exit__(self, password, port=8483, addr=None, serialnumber=None):
         self.s.close()
-
-class Controller:
-    def __init__(self, host, password, port=1900, seqnums=True):
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.s.bind((host, port))
-        self.password = password
-        self.request = V3_request_frame()
-        self.response = V3_response_frame(self.request)
-
-        if seqnums:
-            self.seqnums = 0
-        else:
-            self.seqnums = None
-
-    def run(self):
-        while True:
-            d = self.s.recvfrom(1024)
-            data = d[0]
-            addr = d[1]
-            self.request.decode(data)
-            print ('< ' + self.request.payload.decode('ascii'))
-            # discovery response
-            if self.request.function == 0:
-                self.response.function = self.request.function
-                self.response.payload = 'Serial=1234;IP=%s'%addr[0]
-                self.response.status = 0
-                frame = self.response.encode()
-                self.s.sendto(frame , addr)
-                print ('  > ' + frame.decode('ascii'))
-            else:
-                # check password
-                if True: #self.requset.pincode == self.password:
-                    if self.request.function == 1:
-                        self.response.function = self.request.function
-                        if self.request.payload == 'boiler.temp':
-                            self.response.payload = 'boiler.temp=90'
-                            self.response.status = 0
-                        elif self.request.payload == 'misc.rsa_key':
-                            self.response.payload = 'casyugdyasguyagusduaysgdaysudyasgdyuasdgua'
-                            self.response.status = 0
-                        frame = self.response.encode()
-                        self.s.sendto(frame , addr)
-                    else:
-                        self.response.function = self.request.function
-                        self.response.payload = 'illegal function'
-                        self.response.status = 1
-                        frame = self.response.encode()
-                        self.s.sendto(frame , addr)
-                    print ('  > ' + frame.decode('ascii'))
-                else:
-                    self.response.function = self.request.function
-                    self.response.payload = 'wrong password'
-                    self.response.status = 1
-                    frame = self.response.encode()
-                    self.s.sendto(frame , addr)
-                    print ('  > ' + frame.decode('ascii'))
-
-
-

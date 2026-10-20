@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.0 (Phase 2 overhaul)
+## 0.0.1 (first release)
 - Package `nbe_blackstar` (`python -m nbe_blackstar`). Modules: `bridge`, `protocol`, `frames`, `ha_classes`, `settings`.
 - Configuration from environment variables; `config.json` optional. Secrets are environment-only.
 - `paho-mqtt` 2.x with the VERSION2 callback API. Pinned in `requirements.txt`.
@@ -11,7 +11,7 @@
 - Removed unused climate and switch code, the command path, and the legacy-topic migration (done on existing installs).
 - Docker image runs `python -m nbe_blackstar`; `docker_init` removed.
 
-## Unreleased (fork of e1z0/nbe-blackstar-homeassistant)
+## Before the first release (changes on top of the upstream project, included in 0.0.1)
 
 ### Security
 - Read-only by default. `Proxy.set()` raises `PermissionError` unless `NBE_ALLOW_WRITE=true`. The two climate `set` rows are removed from `src/nbe_schema`, so no writable entities are published to Home Assistant.
@@ -54,7 +54,7 @@
 ### Docs and deployment
 - README rewritten for public use: requirements, configuration table, Docker and systemd install, Home Assistant entities, known gaps.
 - Compose files build from this repository (`build: docker/Dockerfile`) instead of pulling upstream images.
-- Bridge runs in Docker on its own LXC (Docker 26.1.5, nesting+keyctl), with the systemd unit kept as fallback.
+- The bridge runs in Docker, with a systemd unit as an alternative.
 
 ### Tests
 - `tests/`: 15 offline tests (write guard, schema, secrets, frame decoding, query and availability). Run with `pytest` from a venv that has `requirements-dev.txt`.

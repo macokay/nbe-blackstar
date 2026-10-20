@@ -1,8 +1,7 @@
 import json
 import re
 
-from . import __version__
-from . import settings
+from . import __version__, settings
 
 ORIGIN = {
     "name": "nbe-blackstar",

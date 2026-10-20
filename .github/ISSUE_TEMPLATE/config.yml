@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and ideas
+    url: https://github.com/macokay/nbe-blackstar/discussions
+    about: Ask how to set things up or share what works for your burner.
+  - name: Security vulnerability
+    url: https://github.com/macokay/nbe-blackstar/security/advisories/new
+    about: Report privately. Do not open a public issue.

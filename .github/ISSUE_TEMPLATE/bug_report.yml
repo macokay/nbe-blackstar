@@ -1,0 +1,44 @@
+name: Bug report
+description: Something does not work or shows a wrong value
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Please do not paste your controller pincode, MQTT password, serial number or public IP address. Replace them with placeholders.
+  - type: input
+    id: version
+    attributes:
+      label: nbe-blackstar version
+      description: Release tag or commit, for example `v0.0.1`.
+    validations:
+      required: true
+  - type: dropdown
+    id: install
+    attributes:
+      label: How do you run it?
+      options:
+        - Docker
+        - systemd service
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Burner and controller
+      description: For example `Black Star 1016, V7 controller, firmware 7.0680`.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect, and what happened?
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Output of `docker logs` or `journalctl -u nbe`. Remove secrets first.
+      render: text

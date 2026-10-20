@@ -23,7 +23,7 @@ def _fresh_entities(monkeypatch):
 
 
 def _config_payload(client, object_id):
-    for topic, payload, _ in client.published:
+    for _topic, payload, _ in client.published:
         entity = json.loads(payload).get("default_entity_id", "") if payload else ""
         if entity.endswith(".nbe_" + object_id):
             return json.loads(payload)

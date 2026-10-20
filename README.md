@@ -2,7 +2,9 @@
 
 Reads an NBE pellet burner controller (V7 / v13) over the local network and publishes its values to Home Assistant through MQTT discovery. Read-only by default: the bridge does not change the burner.
 
-Fork of [e1z0/nbe-blackstar-homeassistant](https://github.com/e1z0/nbe-blackstar-homeassistant) (GPL-2, upstream history kept). Changes: [CHANGELOG.md](CHANGELOG.md). Security model: [SECURITY.md](SECURITY.md). Open work: [TODO.md](TODO.md).
+> **Status: under development.** Tested with one Black Star 1016 (V7 controller). Entity names and settings may change before 1.0. Read-only. Feedback and testers with other models are welcome.
+
+Based on [e1z0/nbe-blackstar-homeassistant](https://github.com/e1z0/nbe-blackstar-homeassistant) and the protocol work of Anders Nylund (see [CREDITS.md](CREDITS.md)). Changes: [CHANGELOG.md](CHANGELOG.md). Security: [SECURITY.md](SECURITY.md). Roadmap: [TODO.md](TODO.md). Contributing: [CONTRIBUTING.md](CONTRIBUTING.md). Operations: [docs/runbook.md](docs/runbook.md).
 
 <img src="https://github.com/e1z0/nbe-blackstar-homeassistant/raw/master/pics/nbe_blackstar_plus.png" width=45% height=45%><img src="https://github.com/e1z0/nbe-blackstar-homeassistant/raw/master/pics/nbe1.png" width=45% height=45%>
 
@@ -54,7 +56,7 @@ docker compose logs -f nbe
 
 The image runs as a non-root user and has a healthcheck. It is unhealthy if the controller has not answered for 5 minutes.
 
-Compose builds from this repository. For ARM (Raspberry Pi, Orange Pi) use `docker-compose_aarch64.yml`.
+Compose builds the image from this repository for your machine (amd64 or arm64). Release images for both architectures are published to `ghcr.io/macokay/nbe-blackstar`.
 
 ## Run as a systemd service (without Docker)
 
