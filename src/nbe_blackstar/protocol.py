@@ -40,7 +40,6 @@ class Proxy:
     def __init__(self, password, port=8483, addr=None, serialnumber=None):
         self.password = password
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.bind(('', 0))
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         if addr == '<broadcast>':
             s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
