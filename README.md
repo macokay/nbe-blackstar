@@ -76,6 +76,21 @@ Known gaps:
 * `binary_sensor.nbe_alarm` is the controller flag `off_on_alarm`. Its meaning is not confirmed, so do not use it for notifications yet.
 * The text state of the operating mode and the event log are not decoded yet.
 
+## Home Assistant integration (HACS)
+
+For users without MQTT. A native integration reads the controller directly from Home Assistant, with the same entities, ids and names as the bridge. It is read-only, like the bridge.
+
+**Choose one.** Use either the Docker/MQTT bridge above or this integration, never both against the same controller. The controller answers one client at a time and you would get duplicate entities.
+
+1. In HACS, add `https://github.com/macokay/nbe-blackstar` as a custom repository (type Integration) and install **NBE Black Star**.
+2. Restart Home Assistant.
+3. Settings, Devices & services, Add integration, **NBE Black Star**. Enter the controller IP, serial number and pincode (menu 18 on the burner display). Port defaults to 8483. Pick `da` or `en` for entity names.
+4. Options: language and seconds between reads (default 60).
+
+The pincode is stored in the config entry only (Home Assistant `.storage`) and is never logged. The burner energy total is kept in `nbe_blackstar_energy_<serial>.json` in the Home Assistant config directory.
+
+Status: not yet verified inside a running Home Assistant. See [TODO.md](TODO.md).
+
 ## Development
 
 ```
