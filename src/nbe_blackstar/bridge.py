@@ -36,30 +36,15 @@ import time
 import paho.mqtt.client as paho
 
 from . import ha_classes, settings
-from .energy import EnergyMeter
 from .names import display_name
 from .protocol import Proxy
+from .reader import NON_NEGATIVE, NbeReader, clean_value
 
 log = logging.getLogger("nbe_blackstar")
 
 # until the configuration is loaded the device uses the Black Star default; start() replaces it
 device = ha_classes.Device("nbe_kedel", "NBE Black Star", "unknown", "Black Star 1016 (V7)", "NBE")
 DataEntries = []
-
-# controller reports 999.9 for sensors that are not connected
-NOT_CONNECTED = 999.9
-# resources that can never be negative (pellet count counts down and is not calibrated below zero)
-NON_NEGATIVE = {"operating_data/content"}
-
-
-def clean_value(raw, nonnegative=False):
-    try:
-        value = float(raw)
-    except ValueError:
-        return raw
-    if abs(value - NOT_CONNECTED) < 1e-6 or (nonnegative and value < 0):
-        return ""
-    return raw
 
 
 def binary_value(raw):
@@ -96,89 +81,39 @@ def populate_resources(client):
         client.publish(row.getHaTopic(), row.component.toJSON(), 0, True)
 
 
-_proxy = None
+# raw pellet readings kept for calibration; one row per slow cycle (about 10 minutes)
+TIMESERIES_FILE = os.environ.get("NBE_TIMESERIES_FILE", "/var/lib/nbe/timeseries.csv")
+ENERGY_FILE = os.environ.get("NBE_ENERGY_FILE", "/var/lib/nbe/energy.json")
+
+_reader = None
 
 
-def get_proxy():
-    global _proxy
-    if _proxy is None:
-        _proxy = Proxy(settings.config["nbe_pass"], settings.config["nbe_port"], settings.config["nbe_ip"], settings.config["nbe_serial"])
-    return _proxy
-
-
-def drop_proxy():
-    global _proxy
-    if _proxy is not None:
-        try:
-            _proxy.s.close()
-        except Exception:
-            pass
-    _proxy = None
+def get_reader():
+    global _reader
+    if _reader is None:
+        c = settings.config
+        _reader = NbeReader(c["nbe_ip"], c["nbe_serial"], c["nbe_pass"], c["nbe_port"], ENERGY_FILE, proxy_factory=Proxy)
+    return _reader
 
 
 def fetch_sw_version():
-    # sw_versions lists newest first: "<date>,<version>,<flag>"
-    try:
-        first = get_proxy().get("sw_versions")[0]
-        return first.split(",")[1]
-    except Exception as e:
-        log.warning("Unable to read controller firmware version: %s: %s", type(e).__name__, e)
-        drop_proxy()
-        return None
+    return get_reader().read_firmware()
 
 
 def nbe_query():
     log.debug("Querying controller")
     for attempt in (1, 2):
-        items = {}
         try:
-            proxy = get_proxy()
-            for query in ["operating_data", "settings/boiler", "settings/hot_water"]:
-                for item in proxy.get(query):
-                    key, val = item.split("=", 1)
-                    items[key] = val
-            return items
+            return get_reader().poll()
         except Exception as e:
-            drop_proxy()
             log.warning("Unable to query controller (attempt %d): %s: %s", attempt, type(e).__name__, e)
             if attempt == 1:
                 time.sleep(2)
     return {}
 
 
-# slow-changing counters, read every SLOW_EVERY refresh cycles (about 10 minutes at the default rate)
-SLOW_QUERIES = ["consumption_data/counter"]
-SLOW_EVERY = 10
-slow_cache = {}
-slow_cycles = 0
-
-
-def nbe_query_slow():
-    items = {}
-    try:
-        proxy = get_proxy()
-        for query in SLOW_QUERIES:
-            for item in proxy.get(query):
-                key, val = item.split("=", 1)
-                items[key] = val
-    except Exception as e:
-        drop_proxy()
-        log.warning("Unable to query controller counters: %s: %s", type(e).__name__, e)
-    return items
-
-
-# raw pellet readings kept for calibration; one row per slow cycle (about 10 minutes)
-TIMESERIES_FILE = os.environ.get("NBE_TIMESERIES_FILE", "/var/lib/nbe/timeseries.csv")
-ENERGY_FILE = os.environ.get("NBE_ENERGY_FILE", "/var/lib/nbe/energy.json")
-energy_meter = EnergyMeter(None)
-
-
-def as_number(raw):
-    try:
-        value = float(raw)
-    except (TypeError, ValueError):
-        return None
-    return None if abs(value - NOT_CONNECTED) < 1e-6 else value
+def slow_refreshed():
+    return _reader is not None and _reader.slow_refreshed
 
 
 def log_timeseries(values):
@@ -219,23 +154,14 @@ def search_query(data, search):
 
 
 def refresh_statuses(client):
-    global slow_cycles
     raw_data = nbe_query()
     state = "online" if raw_data else "offline"
     client.publish(device.getUid() + "/bridge/state", state, 0, True)
     if not raw_data:
         return
     touch_heartbeat()
-    slow_cycles += 1
-    if slow_cycles >= SLOW_EVERY:
-        slow_cycles = 0
-        slow_cache.clear()
-        slow_cache.update(nbe_query_slow())
-        log_timeseries(dict(raw_data, **slow_cache))
-    raw_data = dict(raw_data)
-    raw_data.update(slow_cache)
-    kwh = energy_meter.update(as_number(raw_data.get("operating_data/power_kw")), time.time())
-    raw_data["energy/burner_kwh"] = "%.3f" % kwh
+    if slow_refreshed():
+        log_timeseries(raw_data)
     for row in DataEntries:
         key, val = search_query(raw_data, row.resource)
         if key == "none" or val == "none":
@@ -263,7 +189,8 @@ def on_connect(client, userdata, flags, reason_code, properties):
 
 def shutdown(client):
     log.info("Stopping")
-    energy_meter.flush()
+    if _reader is not None:
+        _reader.close()
     client.publish(device.getUid() + "/bridge/state", "offline", 0, True)
     client.loop_stop()
     client.disconnect()
@@ -276,8 +203,7 @@ def start():
     device = make_device(settings.config)
     logging.basicConfig(level=logging.DEBUG if settings.config["debug"] else logging.INFO,
                         format="%(asctime)s %(levelname)s %(name)s: %(message)s")
-    global energy_meter
-    energy_meter = EnergyMeter(ENERGY_FILE)
+    get_reader()
     log.info("Starting NBE Black Star bridge for %s", device.getId())
 
     client = paho.Client(paho.CallbackAPIVersion.VERSION2, client_id=settings.config["mqtt_client_name"])

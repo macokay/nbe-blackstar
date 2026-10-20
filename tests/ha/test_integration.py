@@ -221,7 +221,7 @@ def test_protocol_copy_still_refuses_writes(monkeypatch):
 
 
 def test_copied_modules_match_bridge_sources():
-    for name in ("protocol.py", "frames.py", "energy.py"):
+    for name in ("protocol.py", "frames.py", "energy.py", "reader.py"):
         assert open(os.path.join(COMPONENT, name)).read() == open(os.path.join(ROOT, "src", "nbe_blackstar", name)).read()
 
 

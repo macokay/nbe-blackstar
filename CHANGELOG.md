@@ -4,6 +4,7 @@
 - `protocol.py`: the discovery socket now binds an ephemeral port chosen by the OS (`('', 0)`) instead of searching for a free port. No behaviour change for the controller, which replies to the source port of the request.
 - Hash-pinned installs: `requirements.lock` and `requirements-dev.lock` (pip-compile, `--require-hashes`) are used by CI and the Docker image; the Docker base image is pinned by digest.
 - Release workflow also checks that `manifest.json` `version` matches the tag.
+- The bridge and the Home Assistant integration now share one reader implementation (`reader.py`, copied into the component like `protocol.py`). No behaviour change.
 - Energy total is written every 10th update and on shutdown, reducing SD card writes.
 
 ## 0.0.4

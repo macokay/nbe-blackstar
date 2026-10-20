@@ -61,7 +61,7 @@ def test_one_controller_session_is_reused_across_queries(monkeypatch):
             return ["%s=1" % path]
 
     monkeypatch.setattr(nbe, "Proxy", CountingProxy)
-    monkeypatch.setattr(nbe, "_proxy", None)
+    monkeypatch.setattr(nbe, "_reader", None)
     monkeypatch.setattr(nbe.settings, "config", {"debug": False, "nbe_pass": "x", "nbe_port": 8483, "nbe_ip": "192.0.2.10", "nbe_serial": "123456"}, raising=False)
     nbe.nbe_query()
     nbe.nbe_query()

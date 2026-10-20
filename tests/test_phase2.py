@@ -19,13 +19,13 @@ class BrokenFirmwareProxy(FirmwareProxy):
 
 
 def test_firmware_version_is_newest_entry(monkeypatch):
-    monkeypatch.setattr(nbe, "_proxy", None)
+    monkeypatch.setattr(nbe, "_reader", None)
     monkeypatch.setattr(nbe, "Proxy", FirmwareProxy)
     assert nbe.fetch_sw_version() == "7.0680"
 
 
 def test_firmware_version_none_when_controller_silent(monkeypatch):
-    monkeypatch.setattr(nbe, "_proxy", None)
+    monkeypatch.setattr(nbe, "_reader", None)
     monkeypatch.setattr(nbe, "Proxy", BrokenFirmwareProxy)
     assert nbe.fetch_sw_version() is None
 
