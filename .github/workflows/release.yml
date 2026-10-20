@@ -27,6 +27,9 @@ jobs:
     name: ci
     needs: verify
     uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+      pull-requests: read
 
   publish:
     name: build, push and release
