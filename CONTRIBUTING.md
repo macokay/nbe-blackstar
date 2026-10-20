@@ -19,6 +19,7 @@ Thanks for helping. This project reads values from NBE pellet burner controllers
    .venv/bin/ruff check src tests
    .venv/bin/pytest
    ```
+   CI and the Docker image install from the hash-pinned `requirements.lock` and `requirements-dev.lock`. After changing a pin in `requirements.txt` or `requirements-dev.txt`, regenerate them with `pip-compile --generate-hashes --strip-extras --output-file requirements.lock requirements.txt` (and the same for the dev file).
 4. Update `CHANGELOG.md`.
 5. Open a pull request. Squash merge is used. Keep one logical change per pull request.
 
