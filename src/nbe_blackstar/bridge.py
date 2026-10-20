@@ -36,6 +36,7 @@ import time
 import paho.mqtt.client as paho
 
 from . import ha_classes, settings
+from .names import display_name
 from .protocol import Proxy
 
 log = logging.getLogger("nbe_blackstar")
@@ -80,11 +81,14 @@ def populate_resources(client):
         for row in csv.reader(fp):
             if not row or row[0].startswith("#"):
                 continue
+            # topics stay keyed on the schema (Danish) name so switching language never moves an entity
+            key = ha_classes.strip_invalid(row[3])
+            name = display_name(row[8], row[3], settings.config["lang"])
             if row[1] == "get" and row[2] == "sensor":
-                item = ha_classes.Sensor(row[4], row[6], row[7], row[5], row[3], device, row[8])
+                item = ha_classes.Sensor(row[4], row[6], row[7], row[5], name, device, row[8], key)
                 DataEntries.append(ha_classes.Resource(item, row[2], row[0]))
             if row[1] == "get" and row[2] == "binary_sensor":
-                item = ha_classes.BinarySensor(row[4], row[6], row[3], device, row[8])
+                item = ha_classes.BinarySensor(row[4], row[6], name, device, row[8], key)
                 DataEntries.append(ha_classes.Resource(item, row[2], row[0]))
     for row in DataEntries:
         log.debug("Publishing discovery: %s", row.getHaTopic())

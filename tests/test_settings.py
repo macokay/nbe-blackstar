@@ -52,3 +52,10 @@ def test_device_id_defaults_to_serial_and_can_be_set(tmp_path):
     assert cfg["device_id"] == "nbe_123456"
     cfg = settings.load(str(tmp_path / "none.json"), dict(ENV, NBE_DEVICE_ID="nbe_kedel"))
     assert cfg["device_id"] == "nbe_kedel"
+
+
+def test_lang_defaults_to_danish_and_rejects_unknown(tmp_path):
+    assert settings.load(str(tmp_path / "none.json"), ENV)["lang"] == "da"
+    assert settings.load(str(tmp_path / "none.json"), dict(ENV, NBE_LANG="en"))["lang"] == "en"
+    with pytest.raises(SystemExit, match="NBE_LANG"):
+        settings.load(str(tmp_path / "none.json"), dict(ENV, NBE_LANG="de"))

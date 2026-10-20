@@ -32,7 +32,7 @@ def test_firmware_version_none_when_controller_silent(monkeypatch):
 
 def test_discovery_has_origin_block_and_device_topics(monkeypatch):
     monkeypatch.setattr(nbe, "DataEntries", [])
-    monkeypatch.setattr(nbe.settings, "config", {"ha_prefix": "homeassistant", "debug": False}, raising=False)
+    monkeypatch.setattr(nbe.settings, "config", {"ha_prefix": "homeassistant", "debug": False, "lang": "da"}, raising=False)
     published = []
 
     class C:

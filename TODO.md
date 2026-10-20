@@ -3,7 +3,6 @@
 Status: under development. Read-only. Items here are open work, not promises. See [CHANGELOG.md](CHANGELOG.md) for what is done.
 
 ## Next
-- [ ] Language switch (`NBE_LANG=da|en`) with entity names in the schema.
 - [ ] Native Home Assistant integration (HACS) in this repository, sharing the protocol code, for users without MQTT.
 - [ ] Per-entity availability, so a single sensor can be unavailable without affecting the others.
 - [ ] Energy: integrate burner power (kW) to kWh for the Home Assistant Energy dashboard.
