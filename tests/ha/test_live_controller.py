@@ -12,8 +12,6 @@ pytest.importorskip("pytest_homeassistant_custom_component")
 from homeassistant.setup import async_setup_component  # noqa: E402
 from pytest_homeassistant_custom_component.common import MockConfigEntry  # noqa: E402
 
-from custom_components.nbe_blackstar import api  # noqa: E402
-
 HOST = os.environ.get("NBE_LIVE_HOST")
 SERIAL = os.environ.get("NBE_LIVE_SERIAL")
 PIN = os.environ.get("NBE_LIVE_PIN")
