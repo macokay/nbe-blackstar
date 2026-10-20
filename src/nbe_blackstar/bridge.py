@@ -36,6 +36,7 @@ import time
 import paho.mqtt.client as paho
 
 from . import ha_classes, settings
+from .energy import EnergyMeter
 from .names import display_name
 from .protocol import Proxy
 
@@ -168,6 +169,16 @@ def nbe_query_slow():
 
 # raw pellet readings kept for calibration; one row per slow cycle (about 10 minutes)
 TIMESERIES_FILE = os.environ.get("NBE_TIMESERIES_FILE", "/var/lib/nbe/timeseries.csv")
+ENERGY_FILE = os.environ.get("NBE_ENERGY_FILE", "/var/lib/nbe/energy.json")
+energy_meter = EnergyMeter(None)
+
+
+def as_number(raw):
+    try:
+        value = float(raw)
+    except (TypeError, ValueError):
+        return None
+    return None if abs(value - NOT_CONNECTED) < 1e-6 else value
 
 
 def log_timeseries(values):
@@ -223,6 +234,8 @@ def refresh_statuses(client):
         log_timeseries(dict(raw_data, **slow_cache))
     raw_data = dict(raw_data)
     raw_data.update(slow_cache)
+    kwh = energy_meter.update(as_number(raw_data.get("operating_data/power_kw")), time.time())
+    raw_data["energy/burner_kwh"] = "%.3f" % kwh
     for row in DataEntries:
         key, val = search_query(raw_data, row.resource)
         if key == "none" or val == "none":
@@ -254,6 +267,8 @@ def start():
     device = make_device(settings.config)
     logging.basicConfig(level=logging.DEBUG if settings.config["debug"] else logging.INFO,
                         format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+    global energy_meter
+    energy_meter = EnergyMeter(ENERGY_FILE)
     log.info("Starting NBE Black Star bridge for %s", device.getId())
 
     client = paho.Client(paho.CallbackAPIVersion.VERSION2, client_id=settings.config["mqtt_client_name"])

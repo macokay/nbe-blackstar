@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.0.3
+- Burner energy: `energy/burner_kwh` (`sensor.nbe_braender_energi_kwh`, kWh, total_increasing) integrates the burner power over time. Total kept in `/var/lib/nbe/energy.json` (`NBE_ENERGY_FILE`), so it survives restarts. Gaps over an hour add nothing.
+
 ## 0.0.2
 - `NBE_LANG=da|en` selects the entity names (default `da`). MQTT topics and entity ids stay the same in both languages.
 - `pycryptodome` 4.0.0 (verified against a live controller) and Python 3.14 in the Docker image.
