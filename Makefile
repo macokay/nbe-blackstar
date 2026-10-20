@@ -24,4 +24,4 @@ test:
 	python3 -m pytest -q
 
 lint:
-	ruff check src tests
+	ruff check src tests custom_components
