@@ -2,7 +2,10 @@ FROM python:3.13-alpine
 
 # pinned runtime dependencies (paho-mqtt 2.x uses the VERSION2 callback API)
 COPY requirements.txt /tmp/requirements.txt
+# pip is removed after installing: the runtime does not need it, and it vendors libraries
+# (urllib3, msgpack) that scanners flag
 RUN pip install --no-cache-dir -r /tmp/requirements.txt \
+    && pip uninstall -y pip \
     && rm /tmp/requirements.txt \
     && adduser -D -u 10001 nbe \
     && mkdir -p /var/lib/nbe \
