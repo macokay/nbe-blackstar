@@ -1,0 +1,12 @@
+{
+  "domain": "nbe_blackstar",
+  "name": "NBE Black Star",
+  "codeowners": ["@macokay"],
+  "config_flow": true,
+  "documentation": "https://github.com/macokay/nbe-blackstar",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/macokay/nbe-blackstar/issues",
+  "requirements": ["pycryptodome==4.0.0"],
+  "version": "0.0.3"
+}

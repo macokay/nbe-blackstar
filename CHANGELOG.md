@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+- Native Home Assistant integration (HACS) in `custom_components/nbe_blackstar/`: config flow (IP, serial, pincode, port), polling coordinator, the same sensors and binary sensors as the bridge, burner energy total. Read-only. Use it instead of the Docker/MQTT bridge, not together with it.
+- `pyproject.toml`: repository root added to the pytest path for `tests/ha`.
+
 ## 0.0.3
 - Burner energy: `energy/burner_kwh` (`sensor.nbe_braender_energi_kwh`, kWh, total_increasing) integrates the burner power over time. Total kept in `/var/lib/nbe/energy.json` (`NBE_ENERGY_FILE`), so it survives restarts. Gaps over an hour add nothing.
 

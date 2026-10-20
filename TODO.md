@@ -3,7 +3,8 @@
 Status: under development. Read-only. Items here are open work, not promises. See [CHANGELOG.md](CHANGELOG.md) for what is done.
 
 ## Next
-- [ ] Native Home Assistant integration (HACS) in this repository, sharing the protocol code, for users without MQTT.
+- [ ] HACS integration verification (code is in `custom_components/nbe_blackstar/`, untested in Home Assistant): config flow UI, entity registration and ids, Danish/English names, unload and reload, restart keeps the energy total, install through HACS.
+- [ ] Add `validate.yml` (HACS) and `hassfest.yml` workflows, and extend CI lint to `custom_components`.
 - [ ] Per-entity availability, so a single sensor can be unavailable without affecting the others.
 - [ ] Value audit: [docs/values.md](docs/values.md) lists every value. Still to confirm: units of `pressure`, `feed_*`, `fan_speed`, `milli_ampere`; the `state` text mapping.
 - [ ] Pellet counter: verify unit and that it is monotonic.

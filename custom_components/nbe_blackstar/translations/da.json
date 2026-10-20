@@ -1,0 +1,41 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "NBE Black Star",
+        "description": "Kør ikke denne integration og Docker/MQTT-broen mod den samme styring.",
+        "data": {
+          "host": "Styringens IP-adresse",
+          "serial": "Serienummer",
+          "pincode": "Pinkode",
+          "port": "Port",
+          "lang": "Sprog for enhedsnavne (da eller en)"
+        },
+        "data_description": {
+          "serial": "Vises i menu 18 på brænderens display.",
+          "pincode": "Vises i menu 18 på brænderens display."
+        }
+      }
+    },
+    "error": {
+      "invalid_ip": "Skriv en gyldig IP-adresse.",
+      "invalid_serial": "Serienummeret er op til 6 cifre.",
+      "invalid_pincode": "Pinkoden er op til 10 cifre.",
+      "invalid_port": "Skriv en port mellem 1 og 65535.",
+      "cannot_connect": "Kan ikke læse fra styringen. Tjek IP-adresse, serienummer og pinkode."
+    },
+    "abort": {
+      "already_configured": "Denne styring er allerede sat op."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "lang": "Sprog for enhedsnavne (da eller en)",
+          "scan_interval": "Sekunder mellem aflæsninger"
+        }
+      }
+    }
+  }
+}

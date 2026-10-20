@@ -1,0 +1,41 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "NBE Black Star",
+        "description": "Do not run this integration and the Docker/MQTT bridge against the same controller.",
+        "data": {
+          "host": "Controller IP address",
+          "serial": "Serial number",
+          "pincode": "Pincode",
+          "port": "Port",
+          "lang": "Entity name language (da or en)"
+        },
+        "data_description": {
+          "serial": "Shown in menu 18 on the burner display.",
+          "pincode": "Shown in menu 18 on the burner display."
+        }
+      }
+    },
+    "error": {
+      "invalid_ip": "Enter a valid IP address.",
+      "invalid_serial": "The serial number is up to 6 digits.",
+      "invalid_pincode": "The pincode is up to 10 digits.",
+      "invalid_port": "Enter a port between 1 and 65535.",
+      "cannot_connect": "Unable to read from the controller. Check the IP address, serial number and pincode."
+    },
+    "abort": {
+      "already_configured": "This controller is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "lang": "Entity name language (da or en)",
+          "scan_interval": "Seconds between reads"
+        }
+      }
+    }
+  }
+}
