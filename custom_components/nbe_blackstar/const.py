@@ -6,6 +6,8 @@ CONF_PORT = "port"
 CONF_LANG = "lang"
 CONF_SCAN_INTERVAL = "scan_interval"
 
+CONF_DEVICE_NAME = "device_name"
+DEFAULT_DEVICE_NAME = "NBE Black Star"
 DEFAULT_PORT = 8483
 DEFAULT_LANG = "da"
 DEFAULT_SCAN_INTERVAL = 60

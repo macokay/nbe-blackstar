@@ -9,7 +9,8 @@
           "serial": "Serienummer",
           "pincode": "Pinkode",
           "port": "Port",
-          "lang": "Sprog for enhedsnavne (da eller en)"
+          "lang": "Sprog for enhedsnavne (da eller en)",
+          "device_name": "Enhedsnavn"
         },
         "data_description": {
           "serial": "Vises i menu 18 på brænderens display.",
