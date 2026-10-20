@@ -33,7 +33,7 @@ class NbeEntity(CoordinatorEntity):
         serial = entry.data[CONF_SERIAL]
         self._attr_name = name_en if entry.options.get(CONF_LANG, DEFAULT_LANG) == "en" else name_da
         self._attr_unique_id = f"nbe_{serial}_{object_id}"
-        self.entity_id = f"{platform}.nbe_{object_id}"
+        self._attr_suggested_object_id = f"nbe_{object_id}"
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, serial)},
             name="NBE Black Star",
