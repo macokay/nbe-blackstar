@@ -1,0 +1,21 @@
+name: Feature request
+description: Suggest a new sensor, setting or improvement
+labels: [feature]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What do you want to see or do?
+    validations:
+      required: true
+  - type: textarea
+    id: values
+    attributes:
+      label: Controller values involved
+      description: Keys from `operating_data`, `settings` or `consumption_data`, and what the display shows for them.
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety
+      options:
+        - label: I understand that writing to a heating appliance needs separate design and agreement with the vendor.

@@ -17,8 +17,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 from __future__ import print_function
-import time
+
 import random
+import time
 from random import SystemRandom
 
 START = b'\x02'
@@ -53,7 +54,7 @@ class Request_frame(object):
             else:
                 self.framedata += ('%1s'%' ').encode('ascii')
 
-            h = START;
+            h = START
             if self.function not in FUNCTION_CODES:
                 raise IOError
             h += ('%02u'%self.function).encode('ascii')
@@ -73,8 +74,8 @@ class Request_frame(object):
                 h += self.payload.encode('ascii')
             except UnicodeError:
                 h += self.payload
-            h += END;
-            if self.encrypted: 
+            h += END
+            if self.encrypted:
                 pad = b''.join([bytes(chr(SystemRandom().randrange(128)), 'utf-8') for x in range(64-len(h))])
                 h+=pad
                 if hasattr(self, 'xtea_key'):
@@ -129,7 +130,7 @@ class Response_frame(object):
     def encode(self):
         self.framedata = ('%12s'%self.request.appid).encode('ascii')
         self.framedata += ('%6s'%self.request.controllerid).encode('ascii')
-        self.framedata += START;
+        self.framedata += START
         if int(self.function) > 13:
             raise IOError
         self.framedata += ('%02u'%self.function).encode('ascii')
@@ -141,7 +142,7 @@ class Response_frame(object):
             raise IOError
         self.framedata += ('%03u'%len(self.payload)).encode('ascii')
         self.framedata += self.payload.encode('ascii')
-        self.framedata += END;
+        self.framedata += END
         return self.framedata
 
     def decode(self, record):

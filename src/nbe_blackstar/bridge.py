@@ -35,8 +35,7 @@ import time
 
 import paho.mqtt.client as paho
 
-from . import ha_classes
-from . import settings
+from . import ha_classes, settings
 from .protocol import Proxy
 
 log = logging.getLogger("nbe_blackstar")

@@ -54,7 +54,7 @@
 ### Docs and deployment
 - README rewritten for public use: requirements, configuration table, Docker and systemd install, Home Assistant entities, known gaps.
 - Compose files build from this repository (`build: docker/Dockerfile`) instead of pulling upstream images.
-- Bridge runs in Docker on its own LXC (Docker 26.1.5, nesting+keyctl), with the systemd unit kept as fallback.
+- The bridge runs in Docker, with a systemd unit as an alternative.
 
 ### Tests
 - `tests/`: 15 offline tests (write guard, schema, secrets, frame decoding, query and availability). Run with `pytest` from a venv that has `requirements-dev.txt`.
