@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.0.4
 - Native Home Assistant integration (HACS) in `custom_components/nbe_blackstar/`: config flow (IP, serial, pincode, port), polling coordinator, the same sensors and binary sensors as the bridge, burner energy total. Read-only. Use it instead of the Docker/MQTT bridge, not together with it.
 - `pyproject.toml`: repository root added to the pytest path for `tests/ha`.
 
