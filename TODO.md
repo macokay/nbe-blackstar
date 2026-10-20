@@ -3,7 +3,7 @@
 Status: under development. Read-only. Items here are open work, not promises. See [CHANGELOG.md](CHANGELOG.md) for what is done.
 
 ## Next
-- [ ] HACS integration verification (code is in `custom_components/nbe_blackstar/`, untested in Home Assistant): config flow UI, entity registration and ids, Danish/English names, unload and reload, restart keeps the energy total, install through HACS.
+- [ ] HACS integration: loads and renders its config flow in a real Home Assistant test instance (pytest-homeassistant-custom-component 0.13.368, scratch only, not a repo dependency). Setup without a controller ends in SETUP_RETRY, as intended. Still to verify with a live controller: entity registration and ids, Danish/English names, unload and reload, restart keeps the energy total, install through HACS.
 - [ ] Add `validate.yml` (HACS) and `hassfest.yml` workflows, and extend CI lint to `custom_components`.
 - [ ] Per-entity availability, so a single sensor can be unavailable without affecting the others.
 - [ ] Value audit: [docs/values.md](docs/values.md) lists every value. Still to confirm: units of `pressure`, `feed_*`, `fan_speed`, `milli_ampere`; the `state` text mapping.
