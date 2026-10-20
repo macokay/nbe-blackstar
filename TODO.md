@@ -5,7 +5,7 @@ Status: under development. Read-only. Items here are open work, not promises. Se
 ## Next
 - [ ] Native Home Assistant integration (HACS) in this repository, sharing the protocol code, for users without MQTT.
 - [ ] Per-entity availability, so a single sensor can be unavailable without affecting the others.
-- [ ] Value audit: document every value the controller exposes (`operating_data`, `settings/*`, `consumption_data`, `sw_versions`) with meaning, unit and whether it is worth an entity. Check each used value against the display and the vendor manual.
+- [ ] Value audit: [docs/values.md](docs/values.md) lists every value. Still to confirm: units of `pressure`, `feed_*`, `fan_speed`, `milli_ampere`; the `state` text mapping.
 - [ ] Pellet counter: verify unit and that it is monotonic.
 - [ ] Pellet magazine level: calibrate from the logged raw counter against manual refill records.
 - [ ] Verify the multi-arch image on real arm64 hardware.
