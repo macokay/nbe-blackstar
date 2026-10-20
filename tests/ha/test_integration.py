@@ -154,8 +154,32 @@ def test_energy_total_integrates_and_persists(tmp_path):
     assert reader.poll()[const.ENERGY_RESOURCE] == "0.000"
     now[0] = 1800
     assert reader.poll()[const.ENERGY_RESOURCE] == "3.000"
+    reader.close()
     assert json.load(open(tmp_path / "energy.json"))["kwh"] == 3.0
     assert make_reader(tmp_path).meter.kwh == 3.0
+
+
+def test_close_flushes_total_and_survives_flush_error(tmp_path, caplog):
+    now = [0]
+    reader = make_reader(tmp_path, clock=lambda: now[0])
+    reader.poll()
+    now[0] = 1800
+    reader.poll()
+    assert not (tmp_path / "energy.json").exists()
+    reader.close()
+    assert json.load(open(tmp_path / "energy.json"))["kwh"] == 3.0
+    assert FakeProxy.instances[0].s.closed
+
+    reader = make_reader(tmp_path)
+    reader.poll()
+
+    def broken():
+        raise RuntimeError("boom")
+
+    reader.meter.flush = broken
+    reader.close()
+    assert FakeProxy.instances[-1].s.closed
+    assert "Unable to flush energy total" in caplog.text
 
 
 def test_entities_match_bridge_schema():

@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 
 from nbe_blackstar import bridge as nbe
 from nbe_blackstar.energy import EnergyMeter
@@ -29,6 +30,7 @@ def test_total_survives_restart(tmp_path):
     meter = EnergyMeter(path)
     meter.update(3.0, 0)
     meter.update(3.0, 1200)
+    meter.flush()
     assert json.load(open(path))["kwh"] == 1.0
     assert EnergyMeter(path).kwh == 1.0
 
@@ -75,5 +77,72 @@ def test_save_replaces_file_and_leaves_no_temp_file(tmp_path):
     meter = EnergyMeter(str(path))
     meter.update(3.0, 0)
     meter.update(3.0, 1200)
+    meter.flush()
     assert json.load(open(path))["kwh"] == 1.0
     assert not (tmp_path / "energy.json.tmp").exists()
+
+
+def _saved(path):
+    return json.load(open(path))["kwh"] if os.path.exists(path) else None
+
+
+def test_total_is_written_every_tenth_update(tmp_path):
+    path = str(tmp_path / "energy.json")
+    meter = EnergyMeter(path)
+    for i in range(9):
+        meter.update(6.0, i * 60)
+    assert _saved(path) is None
+    meter.update(6.0, 9 * 60)
+    assert _saved(path) == round(meter.kwh, 4)
+    assert meter.kwh > 0
+
+
+def test_flush_writes_total_before_ten_updates(tmp_path):
+    path = str(tmp_path / "energy.json")
+    meter = EnergyMeter(path)
+    meter.update(6.0, 0)
+    meter.update(6.0, 600)
+    assert _saved(path) is None
+    meter.flush()
+    assert _saved(path) == 1.0
+
+
+def test_reopen_after_flush_returns_flushed_total(tmp_path):
+    path = str(tmp_path / "energy.json")
+    meter = EnergyMeter(path)
+    meter.update(3.0, 0)
+    meter.update(3.0, 1200)
+    meter.flush()
+    assert EnergyMeter(path).kwh == 1.0
+
+
+def test_failed_save_keeps_total_and_retries(tmp_path, monkeypatch):
+    path = str(tmp_path / "energy.json")
+    meter = EnergyMeter(path)
+    meter.update(6.0, 0)
+    meter.update(6.0, 600)
+    real_replace = os.replace
+
+    def broken(*args):
+        raise OSError("disk full")
+
+    monkeypatch.setattr(os, "replace", broken)
+    meter.flush()
+    assert meter.kwh == 1.0
+    monkeypatch.setattr(os, "replace", real_replace)
+    meter.flush()
+    assert _saved(path) == 1.0
+
+
+def test_shutdown_flushes_energy_total(tmp_path, monkeypatch):
+    path = str(tmp_path / "energy.json")
+    meter = EnergyMeter(path)
+    meter.update(6.0, 0)
+    meter.update(6.0, 600)
+    monkeypatch.setattr(nbe, "energy_meter", meter)
+    monkeypatch.setattr(nbe, "device", type("D", (), {"getUid": lambda self: "uid"})(), raising=False)
+    client = type("C", (), {"published": [], "loop_stop": lambda self: None, "disconnect": lambda self: None})()
+    client.publish = lambda *a: client.published.append(a)
+    assert nbe.shutdown(client) == 0
+    assert _saved(path) == 1.0
+    assert client.published == [("uid/bridge/state", "offline", 0, True)]

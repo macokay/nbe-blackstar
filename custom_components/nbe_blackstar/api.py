@@ -79,6 +79,10 @@ class NbeReader:
         return self._proxy
 
     def close(self):
+        try:
+            self.meter.flush()
+        except Exception:
+            log.warning("Unable to flush energy total", exc_info=True)
         if self._proxy is not None:
             try:
                 self._proxy.s.close()
