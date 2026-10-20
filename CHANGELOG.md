@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.0.5
 - `protocol.py`: the discovery socket now binds an ephemeral port chosen by the OS (`('', 0)`) instead of searching for a free port. No behaviour change for the controller, which replies to the source port of the request.
 - Hash-pinned installs: `requirements.lock` and `requirements-dev.lock` (pip-compile, `--require-hashes`) are used by CI and the Docker image; the Docker base image is pinned by digest.
 - Release workflow also checks that `manifest.json` `version` matches the tag.
