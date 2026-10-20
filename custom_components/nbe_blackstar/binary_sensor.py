@@ -12,7 +12,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 class NbeBinarySensor(NbeEntity, BinarySensorEntity):
     def __init__(self, coordinator, entry, row):
-        super().__init__(coordinator, entry, "binary_sensor", row)
+        super().__init__(coordinator, entry, row)
         self._attr_icon = row[5]
         self._attr_device_class = BinarySensorDeviceClass(row[7])
 

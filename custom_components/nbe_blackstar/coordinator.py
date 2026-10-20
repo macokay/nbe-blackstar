@@ -26,7 +26,7 @@ class NbeCoordinator(DataUpdateCoordinator):
 class NbeEntity(CoordinatorEntity):
     _attr_has_entity_name = False
 
-    def __init__(self, coordinator, entry, platform, row):
+    def __init__(self, coordinator, entry, row):
         super().__init__(coordinator)
         resource, _, object_id, name_da, name_en, *_ = row
         self._resource = resource

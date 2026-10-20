@@ -16,7 +16,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 class NbeSensor(NbeEntity, SensorEntity):
     def __init__(self, coordinator, entry, row):
-        super().__init__(coordinator, entry, "sensor", row)
+        super().__init__(coordinator, entry, row)
         _, _, _, _, _, icon, state_class, device_class, unit = row
         self._attr_icon = _opt(icon)
         self._attr_state_class = SensorStateClass(state_class) if _opt(state_class) else None
