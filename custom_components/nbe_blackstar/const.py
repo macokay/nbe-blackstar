@@ -1,3 +1,5 @@
+from .reader import ENERGY_RESOURCE  # noqa: F401  (re-exported)
+
 DOMAIN = "nbe_blackstar"
 
 CONF_SERIAL = "serial"
@@ -13,14 +15,6 @@ DEFAULT_LANG = "da"
 DEFAULT_SCAN_INTERVAL = 60
 LANGS = ("da", "en")
 
-# controller reports 999.9 for sensors that are not connected
-NOT_CONNECTED = 999.9
-NON_NEGATIVE = {"operating_data/content"}
-FAST_QUERIES = ("operating_data", "settings/boiler", "settings/hot_water")
-SLOW_QUERIES = ("consumption_data/counter",)
-SLOW_EVERY = 10
-ENERGY_RESOURCE = "energy/burner_kwh"
-POWER_RESOURCE = "operating_data/power_kw"
 ENERGY_FILE = "nbe_blackstar_energy_{serial}.json"
 
 # (resource, type, object_id, name_da, name_en, icon, state_class, device_class, unit); mirrors src/nbe_blackstar/nbe_schema

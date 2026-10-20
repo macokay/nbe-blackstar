@@ -47,12 +47,12 @@ def test_corrupt_file_starts_at_zero_with_warning(tmp_path, caplog):
 def test_refresh_publishes_burner_energy(monkeypatch):
     monkeypatch.setattr(nbe, "DataEntries", [])
     monkeypatch.setattr(nbe.settings, "config", {"ha_prefix": "homeassistant", "debug": False, "lang": "en"}, raising=False)
-    monkeypatch.setattr(nbe, "energy_meter", EnergyMeter(None))
+    monkeypatch.setattr(nbe, "_reader", None)
     client = type("C", (), {"published": [], "subscribe": lambda self, t, qos=0: None})()
     client.publish = lambda topic, payload, qos=0, retain=False: client.published.append((topic, payload))
     nbe.populate_resources(client)
     client.published.clear()
-    monkeypatch.setattr(nbe, "nbe_query", lambda: {"operating_data/power_kw": "6.9"})
+    monkeypatch.setattr(nbe, "nbe_query", lambda: {"operating_data/power_kw": "6.9", "energy/burner_kwh": "0.000"})
     nbe.refresh_statuses(client)
     published = dict(client.published)
     energy_topics = [t for t in published if "energi" in t or "energy" in t]
@@ -139,7 +139,9 @@ def test_shutdown_flushes_energy_total(tmp_path, monkeypatch):
     meter = EnergyMeter(path)
     meter.update(6.0, 0)
     meter.update(6.0, 600)
-    monkeypatch.setattr(nbe, "energy_meter", meter)
+    reader = nbe.NbeReader("192.0.2.10", "123456", "123456", 8483)
+    reader.meter = meter
+    monkeypatch.setattr(nbe, "_reader", reader)
     monkeypatch.setattr(nbe, "device", type("D", (), {"getUid": lambda self: "uid"})(), raising=False)
     client = type("C", (), {"published": [], "loop_stop": lambda self: None, "disconnect": lambda self: None})()
     client.publish = lambda *a: client.published.append(a)

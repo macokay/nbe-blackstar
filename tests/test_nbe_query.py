@@ -29,7 +29,7 @@ class BrokenProxy(FakeProxy):
 
 
 def _configure(monkeypatch):
-    monkeypatch.setattr(nbe, "_proxy", None)
+    monkeypatch.setattr(nbe, "_reader", None)
     monkeypatch.setattr(nbe.time, "sleep", lambda s: None)
     nbe.settings.config = {
         "debug": False, "nbe_pass": "x", "nbe_port": 8483,
