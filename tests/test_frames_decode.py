@@ -1,6 +1,6 @@
 from types import SimpleNamespace
 
-from frames import Response_frame
+from nbe_blackstar.frames import Response_frame
 
 
 def _frame(payload_bytes, seq=7, function=4):

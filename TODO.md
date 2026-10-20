@@ -13,12 +13,12 @@ Read-only fork of the upstream NBE Black Star bridge. Writes to the controller a
 - [x] Crash on missing state dir: container crashed with FileNotFoundError at first slow cycle (RestartCount 1). Fixed: state dir in image, volume `nbe-data`, safe write and cycle wrapper. Verified live 17:13 UTC: timeseries row written, RestartCount 0.
 
 ## Public release
-- [ ] Device id from the controller serial number, not hardcoded. Two controllers must not collide.
-- [ ] Language switch via env (`NBE_LANG=da|en`), names in the schema.
-- [ ] `sw_version` from the controller (`sw_versions`), not hardcoded text.
-- [ ] CI: GitHub Actions running `pytest`, with `permissions: { contents: read }`. Add `requirements.txt` for runtime.
-- [ ] Migrate `paho-mqtt` 1.6.1 to 2.x with `CallbackAPIVersion`.
-- [ ] Remove dead code (`Climate`, `Switch`, `on_message`) and unused imports. Replace `print` with `logging`.
+- [x] Device id from the controller serial number (`nbe_<serial>`), overridable with `NBE_DEVICE_ID`.
+- [ ] Language switch via env (`NBE_LANG=da|en`), names in the schema. Deferred to phase 4.
+- [x] `sw_version` from the controller (`sw_versions`), not hardcoded text.
+- [x] `requirements.txt` for runtime (`requirements-dev.txt` for tests). CI with GitHub Actions is phase 3.
+- [x] Migrate `paho-mqtt` to 2.x with `CallbackAPIVersion` (pinned 2.1.0).
+- [x] Remove dead code (`Climate`, `Switch`, `on_message`) and unused imports. Replace `print` with `logging`.
 
 ## Features
 - [ ] Energy: integrate burner power (kW) to kWh so it shows in the Home Assistant Energy dashboard.

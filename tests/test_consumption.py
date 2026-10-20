@@ -1,4 +1,4 @@
-import nbe
+from nbe_blackstar import bridge as nbe
 
 
 class SlowProxy:

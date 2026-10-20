@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from protocol import Proxy
+from nbe_blackstar.protocol import Proxy
 
 
 def _proxy_without_network():

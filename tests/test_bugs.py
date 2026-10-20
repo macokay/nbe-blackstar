@@ -1,7 +1,7 @@
 import csv
 import os
 
-import nbe
+from nbe_blackstar import bridge as nbe
 
 
 def test_999_9_is_hidden_but_large_counter_is_kept():
@@ -69,7 +69,7 @@ def test_one_controller_session_is_reused_across_queries(monkeypatch):
 
 
 def test_silent_controller_raises_timeout_not_none(monkeypatch):
-    import protocol
+    from nbe_blackstar import protocol
 
     class SilentSocket:
         def sendto(self, *a):

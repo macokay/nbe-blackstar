@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.0 (Phase 2 overhaul)
+- Package `nbe_blackstar` (`python -m nbe_blackstar`). Modules: `bridge`, `protocol`, `frames`, `ha_classes`, `settings`.
+- Configuration from environment variables; `config.json` optional. Secrets are environment-only.
+- `paho-mqtt` 2.x with the VERSION2 callback API. Pinned in `requirements.txt`.
+- `logging` replaces `print`. Level from `NBE_DEBUG`.
+- Device id from `NBE_DEVICE_ID` (default `nbe_<serial>`). Topic prefix follows the device id.
+- Device name from `NBE_DEVICE_NAME`. Firmware version read from the controller (`sw_versions`).
+- Discovery payloads carry an `origin` block (name, version, support URL).
+- Removed unused climate and switch code, the command path, and the legacy-topic migration (done on existing installs).
+- Docker image runs `python -m nbe_blackstar`; `docker_init` removed.
+
 ## Unreleased (fork of e1z0/nbe-blackstar-homeassistant)
 
 ### Security

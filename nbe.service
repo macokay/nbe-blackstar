@@ -9,7 +9,7 @@ Group=nbe
 WorkingDirectory=/opt/nbe
 EnvironmentFile=/etc/nbe/nbe.env
 Environment=PYTHONUNBUFFERED=1
-ExecStart=/opt/nbe/venv/bin/python3 /opt/nbe/nbe.py
+ExecStart=/opt/nbe/venv/bin/python3 -m nbe_blackstar
 Restart=always
 RestartSec=10
 NoNewPrivileges=yes

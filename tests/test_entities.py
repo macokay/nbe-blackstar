@@ -1,6 +1,6 @@
 import json
 
-import nbe
+from nbe_blackstar import bridge as nbe
 
 
 class RecordingClient:
@@ -64,10 +64,3 @@ def test_discovery_publishes_binary_sensor_for_pump(monkeypatch):
     client = _fresh_entities(monkeypatch)
     payload = _config_payload(client, "kedelpumpe")
     assert payload["device_class"] == "running"
-
-
-def test_legacy_entities_are_removed(monkeypatch):
-    client = _fresh_entities(monkeypatch)
-    cleared = {topic for topic, payload, retain in client.published if payload == "" and retain}
-    assert "homeassistant/sensor/nbeblackstar/burned_total/config" in cleared
-    assert "homeassistant/climate/nbeblackstar/core_temp_regulation/config" in cleared

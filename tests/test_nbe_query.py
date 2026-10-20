@@ -1,4 +1,4 @@
-import nbe
+from nbe_blackstar import bridge as nbe
 
 
 class FakeClient:
@@ -85,9 +85,9 @@ def test_query_retries_once_after_transient_failure(monkeypatch):
     assert nbe.nbe_query()["operating_data"] == "1"
 
 
-def test_query_error_message_names_the_exception(monkeypatch, capsys):
+def test_query_error_message_names_the_exception(monkeypatch, caplog):
     _configure(monkeypatch)
     monkeypatch.setattr(nbe, "Proxy", BrokenProxy)
     monkeypatch.setattr(nbe.time, "sleep", lambda s: None)
     nbe.nbe_query()
-    assert "OSError" in capsys.readouterr().out
+    assert "OSError" in caplog.text

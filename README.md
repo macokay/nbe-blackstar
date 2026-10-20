@@ -22,17 +22,25 @@ Tested with a Black Star 1016 and a V7 controller. Other models are not verified
 
 ## Configuration
 
-Non-secret settings go in `config.json` (see `config.json-example`). Secrets come only from the environment.
+Every setting comes from an environment variable. `config.json` is optional and may hold non-secret overrides (see `config.json-example`). Secrets are environment-only.
 
-| Setting | Where | Notes |
-|---|---|---|
-| `nbe_serial` | config.json | Serial number. Menu 18 on the controller. |
-| `nbe_ip`, `nbe_port` | config.json | Controller IP (fixed) and UDP port, default 8483. |
-| `mqtt_server`, `mqtt_port`, `mqtt_user` | config.json | Your MQTT broker. |
-| `refresh_rate` | config.json | Seconds between reads. Default 60. |
-| `NBE_PASS` | env | Controller pincode. Shown on the burner display (menu 18). |
-| `MQTT_PASS` | env | MQTT password. |
-| `NBE_ALLOW_WRITE` | env | Leave unset. Writes are not implemented in this build. |
+| Variable | Required | Default | Notes |
+|---|---|---|---|
+| `NBE_SERIAL` | yes | | Controller serial number (menu 18). |
+| `NBE_IP` | yes | | Controller IP (use a fixed address). |
+| `NBE_PORT` | no | `8483` | Controller UDP port. |
+| `NBE_PASS` | yes | | Controller pincode, shown on the burner display (menu 18). Secret. |
+| `MQTT_IP` | yes | | MQTT broker host. |
+| `MQTT_PORT` | no | `1883` | MQTT broker port. |
+| `MQTT_USER` | no | | MQTT user. |
+| `MQTT_PASS` | yes | | MQTT password. Secret. |
+| `MQTT_CLIENT_NAME` | no | `nbe-blackstar` | MQTT client id. |
+| `REFRESH_RATE` | no | `60` | Seconds between reads. |
+| `HA_PREFIX` | no | `homeassistant` | Home Assistant discovery prefix. |
+| `NBE_DEVICE_ID` | no | `nbe_<serial>` | Device id. Keeps entity topics stable when changed. |
+| `NBE_DEVICE_NAME` | no | `NBE Black Star` | Device name in Home Assistant. |
+| `NBE_DEBUG` | no | `false` | Debug logging. |
+| `NBE_ALLOW_WRITE` | no | unset | Leave unset. Writes are not implemented in this build. |
 
 Copy `.env.local.example` to `.env.local`, fill in the secrets, and keep it out of git (it is gitignored).
 
@@ -51,9 +59,9 @@ Compose builds from this repository. For ARM (Raspberry Pi, Orange Pi) use `dock
 ## Run as a systemd service (without Docker)
 
 1. Create a system user `nbe`.
-2. Copy `src/` to `/opt/nbe` and `config.json` next to it.
-3. Put the secrets in `/etc/nbe/nbe.env` (`NBE_PASS=...`, `MQTT_PASS=...`), mode 600.
-4. Install the runtime: `python3 -m venv /opt/nbe/venv && /opt/nbe/venv/bin/pip install paho-mqtt==1.6.1 pycryptodome`
+2. Copy `src/nbe_blackstar/` to `/opt/nbe/nbe_blackstar`.
+3. Put all variables from the table in `/etc/nbe/nbe.env` (mode 600).
+4. Install the runtime: `python3 -m venv /opt/nbe/venv && /opt/nbe/venv/bin/pip install -r requirements.txt`
 5. Copy `nbe.service` to `/etc/systemd/system/`, then `systemctl enable --now nbe`.
 
 ## Home Assistant
@@ -76,7 +84,7 @@ The tests run offline. They cover the write guard, schema, secrets, frame decodi
 
 ## Customization
 
-The sensors and their names are defined in `src/nbe_schema`. Columns: `RESOURCE, METHOD, TYPE, NAME, ICON, STATE-CLASS, DEVICE-CLASS, UNIT, OBJECT_ID`.
+The sensors and their names are defined in `src/nbe_blackstar/nbe_schema`. Columns: `RESOURCE, METHOD, TYPE, NAME, ICON, STATE-CLASS, DEVICE-CLASS, UNIT, OBJECT_ID`.
 
 ## Credits
 
@@ -87,7 +95,7 @@ Protocol reverse engineering: Anders Nylund (2013). Original integration: e1z0. 
 This project is licensed under the GNU General Public License v3.0 or later (see [LICENSE](LICENSE)).
 
 Some files keep their original notices:
-* `src/protocol.py`, `src/frames.py`: GPL-2.0 or later (Anders Nylund, 2013). Compatible with GPL-3.0.
-* `src/nbe.py`, `src/ha_classes.py`, `src/settings.py`: BSD-3-Clause (e1z0, 2021-2022). Compatible with GPL-3.0.
+* `src/nbe_blackstar/protocol.py`, `src/nbe_blackstar/frames.py`: GPL-2.0 or later (Anders Nylund, 2013). Compatible with GPL-3.0.
+* `src/nbe_blackstar/bridge.py`, `src/nbe_blackstar/ha_classes.py`, `src/nbe_blackstar/settings.py`: BSD-3-Clause (e1z0, 2021-2022). Compatible with GPL-3.0.
 
 Credits and contributors: [CREDITS.md](CREDITS.md).

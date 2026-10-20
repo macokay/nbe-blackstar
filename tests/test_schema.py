@@ -1,7 +1,7 @@
 import csv
 import os
 
-SCHEMA = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src", "nbe_schema")
+SCHEMA = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "src", "nbe_blackstar", "nbe_schema")
 
 
 def _rows():

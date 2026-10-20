@@ -1,6 +1,6 @@
 import csv
 
-import nbe
+from nbe_blackstar import bridge as nbe
 
 
 def test_timeseries_writes_header_and_raw_values(tmp_path, monkeypatch):
@@ -22,15 +22,15 @@ def test_timeseries_appends_without_duplicating_header(tmp_path, monkeypatch):
     assert rows[0][0] == "timestamp"
 
 
-def test_timeseries_write_failure_does_not_raise(tmp_path, monkeypatch, capsys):
+def test_timeseries_write_failure_does_not_raise(tmp_path, monkeypatch, caplog):
     monkeypatch.setattr(nbe, "TIMESERIES_FILE", str(tmp_path / "missing" / "timeseries.csv"))
     nbe.log_timeseries({"operating_data/content": "1", "consumption_data/counter": "2"})
-    assert "Unable to write timeseries" in capsys.readouterr().out
+    assert "Unable to write timeseries" in caplog.text
 
 
-def test_cycle_wrapper_survives_unexpected_error(monkeypatch, capsys):
+def test_cycle_wrapper_survives_unexpected_error(monkeypatch, caplog):
     def boom(client):
         raise FileNotFoundError("simulated")
     monkeypatch.setattr(nbe, "refresh_statuses", boom)
     assert nbe.safe_refresh(object()) is False
-    assert "Refresh cycle failed" in capsys.readouterr().out
+    assert "Refresh cycle failed" in caplog.text
