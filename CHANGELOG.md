@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- Home Assistant integration: the firmware version read is retried on later polls if it failed at setup, and the device is updated when it succeeds.
+
 ## 0.0.5
 - `protocol.py`: the discovery socket is no longer bound explicitly; the OS picks an ephemeral port on first send. This removes the CodeQL bind-all-interfaces alert. No behaviour change for the controller.
 - Hash-pinned installs: `requirements.lock` and `requirements-dev.lock` (pip-compile, `--require-hashes`) are used by CI and the Docker image; the Docker base image is pinned by digest.

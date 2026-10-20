@@ -99,3 +99,31 @@ async def test_device_name_comes_from_config(hass, fake_controller):
     temp = hass.states.get("sensor.nbe_kedel_temperatur")
     assert temp is not None
     assert temp.attributes["friendly_name"].startswith("Kedel ")
+
+
+async def test_firmware_read_is_retried_after_failed_setup(hass, fake_controller, monkeypatch):
+    from homeassistant.helpers import device_registry as dr
+
+    calls = []
+
+    def read_firmware(self):
+        calls.append(1)
+        # call 1 is the setup read, call 2 the retry in the first poll; both fail
+        return None if len(calls) <= 2 else "7.0680"
+
+    monkeypatch.setattr(api.NbeReader, "read_firmware", read_firmware)
+    entry = _entry("da")
+    entry.add_to_hass(hass)
+    assert await async_setup_component(hass, "nbe_blackstar", {})
+    await hass.async_block_till_done()
+
+    def device():
+        devices = dr.async_entries_for_config_entry(dr.async_get(hass), entry.entry_id)
+        return next(d for d in devices if ("nbe_blackstar", "123456") in d.identifiers)
+
+    assert device().sw_version is None
+
+    await hass.data["nbe_blackstar"][entry.entry_id].async_refresh()
+    await hass.async_block_till_done()
+
+    assert device().sw_version == "7.0680"

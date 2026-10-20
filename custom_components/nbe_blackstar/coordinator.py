@@ -1,6 +1,7 @@
 import logging
 from datetime import timedelta
 
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity, DataUpdateCoordinator, UpdateFailed
 
@@ -18,9 +19,27 @@ class NbeCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self):
         try:
-            return await self.hass.async_add_executor_job(self.reader.poll)
+            data = await self.hass.async_add_executor_job(self.reader.poll)
         except Exception as err:
             raise UpdateFailed(f"Unable to query controller: {type(err).__name__}") from err
+        if self.firmware is None:
+            await self._retry_firmware()
+        return data
+
+    async def _retry_firmware(self):
+        try:
+            firmware = await self.hass.async_add_executor_job(self.reader.read_firmware)
+            if firmware is None:
+                return
+            self.firmware = firmware
+            serial = self.config_entry.data[CONF_SERIAL]
+            registry = dr.async_get(self.hass)
+            # not async_get_device: deprecated in new HA, and the by-identifier lookups are missing in HA 2025.1
+            for device in dr.async_entries_for_config_entry(registry, self.config_entry.entry_id):
+                if (DOMAIN, serial) in device.identifiers:
+                    registry.async_update_device(device.id, sw_version=firmware)
+        except Exception as e:
+            log.debug("Firmware version retry failed: %s", type(e).__name__)
 
 
 class NbeEntity(CoordinatorEntity):
