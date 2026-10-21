@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.0.6
 - Bridge: SIGTERM (Docker and systemd stop) now runs the same shutdown path as Ctrl+C, so the energy total is flushed and the bridge publishes offline.
 - Bridge: availability goes offline only after 3 consecutive failed cycles, so a single missed poll no longer flips every entity to unavailable and back.
 - Bridge: the firmware version read is retried on later cycles if it failed at connect, and discovery is republished once when it succeeds. Discovery no longer accumulates duplicate entries on reconnect.
