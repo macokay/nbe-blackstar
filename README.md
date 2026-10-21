@@ -13,7 +13,7 @@ Based on [e1z0/nbe-blackstar-homeassistant](https://github.com/e1z0/nbe-blacksta
 * An NBE controller on the local network, with a fixed IP address.
 * An MQTT broker, for example the Mosquitto add-on in Home Assistant.
 * Home Assistant, or another MQTT-capable system (OpenHAB, ioBroker, Node-RED).
-* Docker, or Python 3.13 with `paho-mqtt` 1.6.1 and `pycryptodome`.
+* Docker, or Python 3.14 with `paho-mqtt` 2.1.0 and `pycryptodome` 4.0.0.
 
 ## Compatible burners
 
