@@ -19,7 +19,7 @@ Thanks for helping. This project reads values from NBE pellet burner controllers
    .venv/bin/ruff check src tests
    .venv/bin/pytest
    ```
-   CI and the Docker image install from the hash-pinned `requirements.lock` and `requirements-dev.lock`. After changing a pin in `requirements.txt` or `requirements-dev.txt`, regenerate them with `pip-compile --generate-hashes --strip-extras --output-file requirements.lock requirements.txt` (and the same for the dev file).
+   `requirements.in` and `requirements-dev.in` hold the direct dependencies and are the source. `requirements.txt` and `requirements-dev.txt` are generated from them and hash-pinned; CI and the Docker image install from them with `--require-hashes`. After changing a pin in a `.in` file, regenerate with `pip-compile --generate-hashes --strip-extras -o requirements.txt requirements.in` (and `-o requirements-dev.txt requirements-dev.in`). Dependabot bumps the hash-pinned `.txt` files; if it leaves the `.in` pin behind, update that pin to match.
 4. Update `CHANGELOG.md`.
 5. Open a pull request. Squash merge is used. Keep one logical change per pull request.
 

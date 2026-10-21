@@ -1,12 +1,12 @@
 FROM python:3.14-alpine@sha256:f6a589d43c42b9e7f7dc67a12d37132491f362859a5d750607710cc56da3bc72
 
 # hash-pinned runtime dependencies (paho-mqtt 2.x uses the VERSION2 callback API)
-COPY requirements.lock /tmp/requirements.lock
+COPY requirements.txt /tmp/requirements.txt
 # pip is removed after installing: the runtime does not need it, and it vendors libraries
 # (urllib3, msgpack) that scanners flag
-RUN pip install --no-cache-dir --require-hashes -r /tmp/requirements.lock \
+RUN pip install --no-cache-dir --require-hashes -r /tmp/requirements.txt \
     && pip uninstall -y pip \
-    && rm /tmp/requirements.lock \
+    && rm /tmp/requirements.txt \
     && adduser -D -u 10001 nbe \
     && mkdir -p /var/lib/nbe \
     && chown nbe:nbe /var/lib/nbe
