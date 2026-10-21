@@ -1,5 +1,6 @@
 """Runs in a real Home Assistant test instance. Needs pytest-homeassistant-custom-component; skipped otherwise."""
 
+import json
 import os
 
 import pytest
@@ -127,3 +128,58 @@ async def test_firmware_read_is_retried_after_failed_setup(hass, fake_controller
     await hass.async_block_till_done()
 
     assert device().sw_version == "7.0680"
+
+
+@pytest.fixture
+def controller_keep_close(monkeypatch):
+    monkeypatch.setattr(api.NbeReader, "poll", lambda self: dict(CONTROLLER))
+    monkeypatch.setattr(api.NbeReader, "read_firmware", lambda self: "7.0680")
+
+
+async def test_homeassistant_stop_flushes_energy_total(hass, controller_keep_close):
+    from homeassistant.const import EVENT_HOMEASSISTANT_STOP
+
+    entry = _entry("da")
+    entry.add_to_hass(hass)
+    assert await async_setup_component(hass, "nbe_blackstar", {})
+    await hass.async_block_till_done()
+
+    reader = hass.data["nbe_blackstar"][entry.entry_id].reader
+    reader.meter.kwh = 12.5
+    assert not os.path.exists(reader.meter.path)
+
+    hass.bus.async_fire(EVENT_HOMEASSISTANT_STOP)
+    await hass.async_block_till_done()
+
+    with open(reader.meter.path) as f:
+        assert json.load(f) == {"kwh": 12.5}
+
+
+async def test_stop_after_reload_flushes_once(hass, controller_keep_close, monkeypatch):
+    from homeassistant.const import EVENT_HOMEASSISTANT_STOP
+
+    entry = _entry("da")
+    entry.add_to_hass(hass)
+    assert await async_setup_component(hass, "nbe_blackstar", {})
+    await hass.async_block_till_done()
+
+    assert await hass.config_entries.async_reload(entry.entry_id)
+    await hass.async_block_till_done()
+
+    closes = []
+    real_close = api.NbeReader.close
+
+    def counting_close(self):
+        closes.append(self)
+        real_close(self)
+
+    monkeypatch.setattr(api.NbeReader, "close", counting_close)
+    reader = hass.data["nbe_blackstar"][entry.entry_id].reader
+    reader.meter.kwh = 3.0
+
+    hass.bus.async_fire(EVENT_HOMEASSISTANT_STOP)
+    await hass.async_block_till_done()
+
+    assert closes == [reader]
+    with open(reader.meter.path) as f:
+        assert json.load(f) == {"kwh": 3.0}

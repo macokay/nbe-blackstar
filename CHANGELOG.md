@@ -5,6 +5,9 @@
 - Bridge: availability goes offline only after 3 consecutive failed cycles, so a single missed poll no longer flips every entity to unavailable and back.
 - Bridge: the firmware version read is retried on later cycles if it failed at connect, and discovery is republished once when it succeeds. Discovery no longer accumulates duplicate entries on reconnect.
 - README: runtime requirements corrected to Python 3.14, `paho-mqtt` 2.1.0 and `pycryptodome` 4.0.0.
+- Home Assistant integration: the energy total is flushed when Home Assistant stops, so up to ten updates are no longer lost on restart.
+- Frame errors: every `IOError` raised while encoding or decoding a frame now carries a message naming the failed check (start/end byte, short frame, frame length, sequence number, and so on) with the observed values, so the previously empty `OSError:` log lines can be traced. Accepted and rejected frames are unchanged.
+- Dependencies: `requirements.in` and `requirements-dev.in` are the source; the hash-pinned `requirements.txt` and `requirements-dev.txt` are generated with pip-compile and used by CI and the Docker image, so Dependabot bumps reach the image. The `.lock` files are removed.
 - Home Assistant integration: the firmware version read is retried on later polls if it failed at setup, and the device is updated when it succeeds.
 
 ## 0.0.5
