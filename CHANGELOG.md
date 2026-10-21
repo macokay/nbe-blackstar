@@ -2,6 +2,7 @@
 
 ## Unreleased
 - Frame errors: every `IOError` raised while encoding or decoding a frame now carries a message naming the failed check (start/end byte, short frame, frame length, sequence number, and so on) with the observed values, so the previously empty `OSError:` log lines can be traced. Accepted and rejected frames are unchanged.
+- Dependencies: `requirements.in` and `requirements-dev.in` are the source; the hash-pinned `requirements.txt` and `requirements-dev.txt` are generated with pip-compile and used by CI and the Docker image, so Dependabot bumps reach the image. The `.lock` files are removed.
 - Home Assistant integration: the firmware version read is retried on later polls if it failed at setup, and the device is updated when it succeeds.
 
 ## 0.0.5
