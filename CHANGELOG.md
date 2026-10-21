@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.0.7
+- New readings from the controller manual (menu 15 and 18): return temperature (`retur_temperatur`), flue gas temperature (`rog_temperatur`) and current draw in mA (`stromforbrug_ma`). Not connected sensors show unknown.
+
 ## 0.0.6
 - Bridge: SIGTERM (Docker and systemd stop) now runs the same shutdown path as Ctrl+C, so the energy total is flushed and the bridge publishes offline.
 - Bridge: availability goes offline only after 3 consecutive failed cycles, so a single missed poll no longer flips every entity to unavailable and back.

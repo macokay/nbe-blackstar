@@ -22,6 +22,9 @@ EN = {
     "alarm": "Alarm",
     "forbrug_teller": "Pellet consumption counter",
     "braender_energi_kwh": "Burner energy",
+    "retur_temperatur": "Return temperature",
+    "rog_temperatur": "Flue gas temperature",
+    "stromforbrug_ma": "Current draw",
 }
 
 
