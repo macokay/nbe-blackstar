@@ -56,7 +56,7 @@ class Request_frame(object):
 
             h = START
             if self.function not in FUNCTION_CODES:
-                raise IOError
+                raise IOError("request function code %s not in FUNCTION_CODES" % self.function)
             h += ('%02u'%self.function).encode('ascii')
             h += ('%02d'%self.sequencenumber).encode('ascii')
 
@@ -69,7 +69,7 @@ class Request_frame(object):
             h += ('%4s'%'pad ').encode('ascii')
             h += ('%03u'%len(self.payload)).encode('ascii')
             if len(self.payload) > 495:
-                raise IOError
+                raise IOError("request payload length %d > 495" % len(self.payload))
             try:
                 h += self.payload.encode('ascii')
             except UnicodeError:
@@ -99,9 +99,9 @@ class Request_frame(object):
         self.encryption = record[i:1]
         i+=1
         if not record[i] == START[0]:
-            raise IOError
+            raise IOError("request start byte mismatch")
         if len(record) < 17:
-            raise IOError
+            raise IOError("request short frame: %d bytes < 17" % len(record))
         i += 1
         self.function = int(record[i:i+2])
         i += 2
@@ -116,11 +116,11 @@ class Request_frame(object):
         self.payloadsize = int(record[i:i+3])
         i += 3
         if len(record) < self.payloadsize + self.REQUEST_HEADER_SIZE:
-            raise IOError
+            raise IOError("request frame length %d < payload size %d + header %d" % (len(record), self.payloadsize, self.REQUEST_HEADER_SIZE))
         self.payload = record[i:i+self.payloadsize]
         i += self.payloadsize
         if not record[i] == END[0]:
-            raise IOError
+            raise IOError("request end byte mismatch")
 
 class Response_frame(object):
     def __init__(self, request):
@@ -132,14 +132,14 @@ class Response_frame(object):
         self.framedata += ('%6s'%self.request.controllerid).encode('ascii')
         self.framedata += START
         if int(self.function) > 13:
-            raise IOError
+            raise IOError("response function code %s > 13" % self.function)
         self.framedata += ('%02u'%self.function).encode('ascii')
         if self.status not in STATUS_CODES:
-            raise IOError
+            raise IOError("response status %s not in STATUS_CODES" % self.status)
         self.framedata += ('%2d'%self.request.sequencenumber).encode('ascii')
         self.framedata += ('%1s'%self.status).encode('ascii')
         if len(self.payload) > 1007:
-            raise IOError
+            raise IOError("response payload length %d > 1007" % len(self.payload))
         self.framedata += ('%03u'%len(self.payload)).encode('ascii')
         self.framedata += self.payload.encode('ascii')
         self.framedata += END
@@ -154,23 +154,23 @@ class Response_frame(object):
         i+=6
         #import pdb;pdb.set_trace()i
         if not record[i] == START[0]:
-            raise IOError
+            raise IOError("response start byte mismatch")
         if len(record) < self.RESPONSE_HEADER_SIZE:
-            raise IOError
+            raise IOError("response short frame: %d bytes < %d" % (len(record), self.RESPONSE_HEADER_SIZE))
         i += 1
         self.function = int(record[i:i+2])
         i += 2
         self.sequencenumber = int(record[i:i+2])
         if self.sequencenumber != self.request.sequencenumber:
         #    print (self.sequencenumber, self.request.sequencenumber)
-            raise IOError
+            raise IOError("response sequence number %d != request %d" % (self.sequencenumber, self.request.sequencenumber))
         i += 2
         self.status = int(record[i:i+1])
         i += 1
         self.size = int(record[i:i+3])
         i += 3
         if not len(record) == self.size + self.RESPONSE_HEADER_SIZE:
-            raise IOError
+            raise IOError("response frame length %d != header size %d + %d" % (len(record), self.size, self.RESPONSE_HEADER_SIZE))
         #print (record[i:i+self.size])
         raw = record[i:i+self.size]
         try:
@@ -180,7 +180,7 @@ class Response_frame(object):
         #print (self.payload)
         i += self.size
         if not record[i] == END[0]:
-            raise IOError
+            raise IOError("response end byte mismatch")
 
     def parse_payload(self):
         frame = self.payload
