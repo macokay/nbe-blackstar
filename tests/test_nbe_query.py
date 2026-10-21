@@ -50,11 +50,13 @@ def test_failed_query_returns_empty(monkeypatch):
     assert nbe.nbe_query() == {}
 
 
-def test_refresh_publishes_offline_when_query_fails(monkeypatch):
+def test_refresh_publishes_offline_when_query_keeps_failing(monkeypatch):
     _configure(monkeypatch)
+    monkeypatch.setattr(nbe, "_failed_cycles", 0, raising=False)
     monkeypatch.setattr(nbe, "Proxy", BrokenProxy)
     client = FakeClient()
-    nbe.refresh_statuses(client)
+    for _ in range(nbe.OFFLINE_AFTER_FAILED_CYCLES):
+        nbe.refresh_statuses(client)
     assert (nbe.device.getUid() + "/bridge/state", "offline") in client.published
 
 

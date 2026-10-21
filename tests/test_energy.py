@@ -53,6 +53,7 @@ def test_refresh_publishes_burner_energy(monkeypatch):
     nbe.populate_resources(client)
     client.published.clear()
     monkeypatch.setattr(nbe, "nbe_query", lambda: {"operating_data/power_kw": "6.9", "energy/burner_kwh": "0.000"})
+    monkeypatch.setattr(nbe, "fetch_sw_version", lambda: None)
     nbe.refresh_statuses(client)
     published = dict(client.published)
     energy_topics = [t for t in published if "energi" in t or "energy" in t]

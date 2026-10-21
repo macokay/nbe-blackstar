@@ -15,6 +15,7 @@ def test_not_connected_publishes_empty_not_text(monkeypatch):
     client = type("C", (), {"published": [], "publish": lambda self, t, p, q=0, r=False: self.published.append((t, p))})()
     monkeypatch.setattr(nbe, "nbe_query", lambda: {"operating_data/dhw_temp": "999.9"})
     monkeypatch.setattr(nbe, "HEARTBEAT_FILE", os.devnull)
+    monkeypatch.setattr(nbe, "fetch_sw_version", lambda: None)
     monkeypatch.setattr(nbe, "DataEntries", [r for r in nbe.DataEntries if r.type != "sensor"] + [])
     entry = nbe.ha_classes.Resource(nbe.ha_classes.Sensor("none", "temperature", "°C", "measurement", "Varmtvand", nbe.device, "varmtvand"), "sensor", "operating_data/dhw_temp")
     monkeypatch.setattr(nbe, "DataEntries", [entry])

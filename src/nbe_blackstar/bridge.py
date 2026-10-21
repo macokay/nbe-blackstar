@@ -31,6 +31,7 @@
 import csv
 import logging
 import os
+import signal
 import time
 
 import paho.mqtt.client as paho
@@ -62,6 +63,7 @@ def make_device(config):
 
 def populate_resources(client):
     # schema columns: RESOURCE,METHOD,TYPE,NAME,ICON,STATE-CLASS,DEVICE-CLASS,UNIT,OBJECT_ID
+    DataEntries.clear()  # discovery is republished on reconnect and on a late firmware read
     curr_path = os.path.dirname(os.path.realpath(__file__))
     with open(os.path.join(curr_path, "nbe_schema")) as fp:
         for row in csv.reader(fp):
@@ -153,13 +155,27 @@ def search_query(data, search):
     return "none", "none"
 
 
+OFFLINE_AFTER_FAILED_CYCLES = 3
+_failed_cycles = 0
+
+
 def refresh_statuses(client):
+    global _failed_cycles
     raw_data = nbe_query()
-    state = "online" if raw_data else "offline"
-    client.publish(device.getUid() + "/bridge/state", state, 0, True)
     if not raw_data:
+        # a single missed cycle must not flip availability; Home Assistant re-applies stale states on return
+        _failed_cycles += 1
+        if _failed_cycles == OFFLINE_AFTER_FAILED_CYCLES:
+            client.publish(device.getUid() + "/bridge/state", "offline", 0, True)
         return
+    _failed_cycles = 0
+    client.publish(device.getUid() + "/bridge/state", "online", 0, True)
     touch_heartbeat()
+    if device.sw_version == "unknown":
+        firmware = fetch_sw_version()
+        if firmware:
+            device.sw_version = firmware
+            populate_resources(client)
     if slow_refreshed():
         log_timeseries(raw_data)
     for row in DataEntries:
@@ -197,6 +213,15 @@ def shutdown(client):
     return 0
 
 
+def install_sigterm_handler():
+    # Docker and systemd stop with SIGTERM; route it through the KeyboardInterrupt path so shutdown() runs
+    def handler(signum, frame):
+        raise KeyboardInterrupt
+
+    previous = signal.signal(signal.SIGTERM, handler)
+    return lambda: signal.signal(signal.SIGTERM, previous)
+
+
 def start():
     settings.init()
     global device
@@ -220,6 +245,7 @@ def start():
     if client.bad_connection_flag:
         client.loop_stop()
         return 1
+    restore_sigterm = install_sigterm_handler()
     try:
         while True:
             safe_refresh(client)
@@ -227,3 +253,5 @@ def start():
             time.sleep(settings.config["refresh_rate"])
     except KeyboardInterrupt:
         return shutdown(client)
+    finally:
+        restore_sigterm()
