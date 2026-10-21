@@ -7,6 +7,9 @@ operating_data/dhw_ref,get,sensor,Varmtvand mål,mdi:water-boiler,measurement,te
 operating_data/forward_temp,get,sensor,Gulvvarme fremløb,mdi:heating-coil,measurement,temperature,°C,gulv_fremloeb
 operating_data/forward_ref,get,sensor,Gulvvarme ønsket,mdi:heating-coil,measurement,temperature,°C,gulv_oensket
 operating_data/shaft_temp,get,sensor,Skakttemperatur,none,measurement,temperature,°C,skakt_temperatur
+operating_data/return_temp,get,sensor,Returtemperatur,none,measurement,temperature,°C,retur_temperatur
+operating_data/smoke_temp,get,sensor,Røgtemperatur,none,measurement,temperature,°C,rog_temperatur
+operating_data/milli_ampere,get,sensor,Strømforbrug mA,mdi:current-ac,measurement,current,mA,stromforbrug_ma
 operating_data/external_temp,get,sensor,Udetemperatur,none,measurement,temperature,°C,udetemperatur
 operating_data/power_kw,get,sensor,Brændereffekt,mdi:flash,measurement,power,kW,braendereffekt_kw
 operating_data/power_pct,get,sensor,Brænderbelastning,mdi:percent,measurement,none,%,braenderbelastning
