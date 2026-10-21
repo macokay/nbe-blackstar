@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Home Assistant integration: the energy total is flushed when Home Assistant stops, so up to ten updates are no longer lost on restart.
 - Home Assistant integration: the firmware version read is retried on later polls if it failed at setup, and the device is updated when it succeeds.
 
 ## 0.0.5
