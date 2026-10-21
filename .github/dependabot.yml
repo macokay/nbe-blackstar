@@ -7,9 +7,13 @@ updates:
       day: monday
     open-pull-requests-limit: 5
     groups:
-      python-minor-patch:
+      runtime-dependencies:
+        patterns: ["paho-mqtt", "pycryptodome"]
         update-types: [minor, patch]
-    labels: [dependencies]
+      dev-dependencies:
+        patterns: ["pytest", "ruff"]
+        update-types: [minor, patch]
+    labels: [dependencies, python]
     commit-message:
       prefix: "chore(deps)"
 
