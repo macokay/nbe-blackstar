@@ -56,7 +56,7 @@ class NbeEntity(CoordinatorEntity):
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, serial)},
             name=entry.data.get(CONF_DEVICE_NAME, DEFAULT_DEVICE_NAME),
-            manufacturer="NBE",
+            manufacturer="Mac O Kay",
             model="Black Star 1016 (V7)",
             sw_version=coordinator.firmware,
         )
