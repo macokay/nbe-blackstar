@@ -88,3 +88,25 @@ def test_silent_controller_raises_timeout_not_none(monkeypatch):
     import pytest
     with pytest.raises(TimeoutError):
         proxy.make_request(4, "*")
+
+
+def test_request_sequence_wraps_to_two_digits(monkeypatch):
+    from nbe_blackstar import protocol
+
+    class SilentSocket:
+        def sendto(self, *a):
+            return 0
+
+        def settimeout(self, t):
+            pass
+
+    proxy = protocol.Proxy.__new__(protocol.Proxy)
+    proxy.s = SilentSocket()
+    proxy.addr = ("192.0.2.10", 8483)
+    proxy.password = "x"
+    proxy.request = type("R", (), {"sequencenumber": 99, "encode": lambda self: b""})()
+    monkeypatch.setattr(protocol.select, "select", lambda r, w, x, t: ([], [], []))
+    import pytest
+    with pytest.raises(TimeoutError):
+        proxy.make_request(4, "*")
+    assert proxy.request.sequencenumber == 0

@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.0.8
+- Controller requests: the sequence number now wraps at 100 instead of growing to three digits. Fixes the recurring `response sequence number 10 != request 100` errors and the reconnect each one caused.
+
 ## 0.0.7
 - New readings from the controller manual (menu 15 and 18): return temperature (`retur_temperatur`), flue gas temperature (`rog_temperatur`) and current draw in mA (`stromforbrug_ma`). Not connected sensors show unknown.
 

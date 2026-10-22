@@ -68,7 +68,7 @@ class Proxy:
 
         request.payload = 'misc.rsa_key'
         request.function = 1
-        request.sequencenumber += 1
+        request.sequencenumber = (request.sequencenumber + 1) % 100
         self.s.sendto(request.encode() , self.addr)
         self.s.settimeout(5.0)
         data, server = self.s.recvfrom(4096)
@@ -167,7 +167,7 @@ class Proxy:
 
     def make_request(self, function, payload, encrypt=False, key=None):
         #print(' '.join([hex(ord(ch)) for ch in c.framedata]))
-        self.request.sequencenumber += 1
+        self.request.sequencenumber = (self.request.sequencenumber + 1) % 100
         self.request.payload = payload
         self.request.function = function
         self.request.encrypted = encrypt
