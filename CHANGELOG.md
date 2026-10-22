@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.0.8
+## 0.0.9
 - Controller requests: the sequence number now wraps at 100 instead of growing to three digits. Fixes the recurring `response sequence number 10 != request 100` errors and the reconnect each one caused.
 
 ## 0.0.7
