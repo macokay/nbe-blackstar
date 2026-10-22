@@ -1,23 +1,28 @@
 # NBE Black Star (Blackstar+, RTB) for Home Assistant
 
 [![Release](https://img.shields.io/github/v/release/macokay/nbe-blackstar)](https://github.com/macokay/nbe-blackstar/releases)
-[![License](https://img.shields.io/github/license/macokay/nbe-blackstar)](LICENSE)
+[![License](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)
 [![HACS](https://img.shields.io/badge/HACS-custom-orange.svg)](https://hacs.xyz)
 
 Reads an NBE pellet burner controller (V7 / v13) over the local network and shows its values in Home Assistant: temperatures, burner power and load, pumps, oxygen, operating state and a burner energy total. Read-only: it never changes the burner.
 
 There are two ways to run it. Pick one.
 
-| | HACS integration (recommended) | Docker / MQTT bridge |
-|---|---|---|
-| Needs MQTT broker | no | yes |
-| Runs | inside Home Assistant | as a container or systemd service |
-| Setup | add repository, enter IP, serial and pincode | environment variables, then MQTT discovery |
-| Works with | Home Assistant | Home Assistant, OpenHAB, ioBroker, Node-RED |
+**HACS integration (recommended)**
+* Runs inside Home Assistant. No MQTT broker needed.
+* Setup: add the repository, enter the controller IP, serial number and pincode.
+* Works with Home Assistant only.
+
+**Docker / MQTT bridge**
+* Runs as a container or systemd service and publishes to an MQTT broker.
+* Setup: environment variables, then MQTT discovery.
+* Works with Home Assistant, OpenHAB, ioBroker and Node-RED.
 
 > **Use one, never both against the same controller.** The controller answers one client at a time. Two clients cause request errors and duplicate entities.
 
 > **Status: under development.** Tested with one Black Star 1016 (V7 controller). Entity names and settings may change before 1.0. Feedback and testers with other models are welcome.
+
+<img src="docs/img/device.png" alt="The NBE Black Star device in Home Assistant, with its sensors" width="520">
 
 ## Requirements
 
