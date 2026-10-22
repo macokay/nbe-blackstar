@@ -44,7 +44,7 @@ from .reader import NON_NEGATIVE, NbeReader, clean_value
 log = logging.getLogger("nbe_blackstar")
 
 # until the configuration is loaded the device uses the Black Star default; start() replaces it
-device = ha_classes.Device("nbe_kedel", "NBE Black Star", "unknown", "Black Star 1016 (V7)", "NBE")
+device = ha_classes.Device("nbe_kedel", "NBE Black Star", "unknown", "Black Star 1016 (V7)", "Mac O Kay")
 DataEntries = []
 
 
@@ -58,7 +58,7 @@ def configure_will(client):
 
 
 def make_device(config):
-    return ha_classes.Device(config["device_id"], config["device_name"], "unknown", "Black Star 1016 (V7)", "NBE")
+    return ha_classes.Device(config["device_id"], config["device_name"], "unknown", "Black Star 1016 (V7)", "Mac O Kay")
 
 
 def populate_resources(client):

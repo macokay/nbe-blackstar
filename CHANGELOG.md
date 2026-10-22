@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.10
+- The device is shown as made by Mac O Kay in Home Assistant, in both the HACS integration and the Docker/MQTT bridge. The model is still Black Star 1016 (V7).
+- README rewritten: the HACS integration is the recommended install, the Docker/MQTT bridge is the alternative, and the two must not run against the same controller.
+
 ## 0.0.9
 - Controller requests: the sequence number now wraps at 100 instead of growing to three digits. Fixes the recurring `response sequence number 10 != request 100` errors and the reconnect each one caused.
 
