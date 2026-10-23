@@ -64,7 +64,7 @@ Confidence:
 ## content vs counter
 
 - `content` (`operating_data/content`) is the magazine level estimate. It is negative on the test controller, so it stays unreliable until calibrated.
-- `consumption_data/counter` is the pellet counter. It is monotonic and is exposed as `forbrug_teller`. Its unit is still unverified.
+- `consumption_data/counter` is the pellet counter. It is monotonic and is exposed as `forbrug_teller`, with unit kg (inferred, not yet checked on the display). Over 24 hours it rose 13.2 while the burner energy rose 62.2 kWh, about 4.7 kWh per unit, close to the energy content of pellets (about 4.8 kWh/kg). Confirm against the burner display before relying on it.
 
 ## settings
 

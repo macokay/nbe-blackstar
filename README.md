@@ -50,7 +50,7 @@ Tested with a Black Star 1016 and a V7 controller. Other models are not verified
 
 <img src="docs/img/config-flow.png" alt="NBE Black Star setup dialog with controller IP, serial number, pincode, port and language" width="420">
 
-After setup, open the integration and choose **Configure** to change the entity name language and the seconds between reads (default 60).
+After setup, open the integration and choose **Configure** to change the entity name language and the seconds between reads (default 60). Entity names start with the device name you chose during setup (default `NBE Black Star`), for example `NBE Black Star Boiler temperature`. To change the device name, remove the integration and add it again.
 
 <img src="docs/img/options.png" alt="NBE Black Star options dialog with entity name language and seconds between reads" width="560">
 

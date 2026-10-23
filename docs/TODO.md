@@ -4,13 +4,13 @@ Status: under development. Read-only. Items here are open work, not promises. Se
 
 ## Next
 - [x] HACS integration installed in Home Assistant and running on a live controller (0.0.9 and 0.0.10). Verified: English names and entity ids, live values, options, energy under load.
-- [ ] HACS friendly names carry the device prefix ("NBE Black Star Boiler temperature"), while the bridge shows "NBE kedel ...". Decide whether to change the device name. Run the live tests with NBE_LIVE_HOST, NBE_LIVE_SERIAL and NBE_LIVE_PIN set.
-- [ ] Energy total when moving from the bridge to HACS. The HACS sensor starts at 0 kWh, and the bridge total is on a separate entity. Decide whether the two are merged.
-- [ ] Per-entity availability, so a single sensor can be unavailable without affecting the others.
+- [x] Controller misses no longer flip the whole integration to unavailable: the coordinator retries once after 2 seconds and keeps the last values until 3 polls in a row have failed. The slow counter keeps its last value when its query fails.
+- [ ] Per-entity availability for a key that goes missing from the data. Open until it is seen in practice.
+- [ ] Energy total when moving from the bridge to HACS: the procedure is in [runbook.md](runbook.md). Decide whether to carry the old total forward.
 - [ ] Value audit: [values.md](values.md) lists every value. Still to confirm: units of `pressure`, `feed_*`, `fan_speed`, `milli_ampere`; the `state` text mapping.
-- [ ] Pellet counter: verify unit and that it is monotonic.
+- [ ] Pellet counter: unit is set to kg (inferred, see values.md). Confirm against the burner display and that the counter stays monotonic.
 - [ ] Pellet magazine level: calibrate from the logged raw counter against manual refill records.
-- [ ] Verify the multi-arch image on real arm64 hardware.
+- [ ] Verify the multi-arch image on real arm64 hardware. CI already imports the arm64 image under QEMU.
 
 ## Blocked on the controller vendor
 - [ ] Operating state text (`state` codes).
