@@ -24,6 +24,8 @@ There are two ways to run it. Pick one.
 
 <img src="docs/img/device.png" alt="The NBE Black Star device in Home Assistant, with its sensors" width="520">
 
+<img src="docs/img/boiler-demo.png" alt="Boiler dashboard in Home Assistant with temperatures, burner power and 24-hour graphs" width="720">
+
 ## Requirements
 
 * An NBE controller on the local network, with a fixed IP address.
