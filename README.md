@@ -1,138 +1,186 @@
-# NBE Black Star (Blackstar+, RTB) for Home Assistant
+<p align="center">
+  <img src="custom_components/nbe_blackstar/brand/icon.png" alt="NBE Black Star" width="120" />
+</p>
 
-[![Release](https://img.shields.io/github/v/release/macokay/nbe-blackstar)](https://github.com/macokay/nbe-blackstar/releases)
-[![License](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)
-[![HACS](https://img.shields.io/badge/HACS-custom-orange.svg)](https://hacs.xyz)
+<h1 align="center">NBE Black Star</h1>
 
-Reads an NBE pellet burner controller (V7 / v13) over the local network and shows its values in Home Assistant: temperatures, burner power and load, pumps, oxygen, operating state and a burner energy total. Read-only: it never changes the burner.
+<p align="center">
+  Read your NBE pellet burner (Black Star, Blackstar+, RTB) directly in Home Assistant — temperatures, burner power and load, pumps, oxygen and a burner energy total, over the local network and read-only.
+</p>
 
-There are two ways to run it. Pick one.
+<p align="center">
+  <a href="https://github.com/hacs/integration">
+    <img src="https://img.shields.io/badge/HACS-Custom-orange.svg" alt="HACS Custom" />
+  </a>
+  <a href="https://github.com/macokay/nbe-blackstar/releases">
+    <img src="https://img.shields.io/github/v/release/macokay/nbe-blackstar" alt="GitHub release" />
+  </a>
+  <a href="https://github.com/macokay/nbe-blackstar/blob/master/LICENSE">
+    <img src="https://img.shields.io/badge/License-GPL--3.0-blue.svg" alt="License" />
+  </a>
+</p>
 
-**HACS integration (recommended)**
-* Runs inside Home Assistant. No MQTT broker needed.
-* Setup: add the repository, enter the controller IP, serial number and pincode.
-* Works with Home Assistant only.
+<p align="center">
+  <a href="https://www.buymeacoffee.com/macokay">
+    <img src="https://img.shields.io/badge/Buy%20Me%20A%20Coffee-%23FFDD00.svg?logo=buy-me-a-coffee&logoColor=black" alt="Buy Me A Coffee" />
+  </a>
+</p>
 
-**Docker / MQTT bridge**
-* Runs as a container or systemd service and publishes to an MQTT broker.
-* Setup: environment variables, then MQTT discovery.
-* Works with Home Assistant, OpenHAB, ioBroker and Node-RED.
+---
 
-> **Use one, never both against the same controller.** The controller answers one client at a time. Two clients cause request errors and duplicate entities.
+## Features
 
-> **Status: under development.** Tested with one Black Star 1016 (V7 controller). Entity names and settings may change before 1.0. Feedback and testers with other models are welcome.
+- Boiler, hot water, floor heating, shaft and outdoor temperatures, with their targets
+- Burner power (kW), burner load (%), oxygen and operating state
+- Boiler pump, floor pump and alarm as binary sensors
+- **Burner energy (kWh)** for the Home Assistant Energy dashboard, integrated from the burner power and kept across restarts
+- Pellet consumption counter (kg)
+- Entity names in Danish or English
+- Read-only: the integration never changes the burner
+- Talks to the controller on the local network, no cloud
+- A Docker/MQTT bridge is available as an alternative, see [docs/docker.md](docs/docker.md)
 
-<img src="docs/img/device.png" alt="The NBE Black Star device in Home Assistant, with its sensors" width="520">
+<p align="center">
+  <img src="docs/img/boiler-demo.png" alt="Boiler dashboard in Home Assistant with temperatures, burner power and 24-hour graphs" width="720" />
+</p>
 
-<img src="docs/img/boiler-demo.png" alt="Boiler dashboard in Home Assistant with temperatures, burner power and 24-hour graphs" width="720">
+---
 
 ## Requirements
 
-* An NBE controller on the local network, with a fixed IP address.
-* Its serial number and pincode, both shown in menu 18 on the burner display.
-* For the HACS integration: Home Assistant with [HACS](https://hacs.xyz) installed.
-* For the Docker bridge: an MQTT broker (for example the Mosquitto add-on) and Docker, or Python 3.14 with `paho-mqtt` 2.1.0 and `pycryptodome` 4.0.0.
+| Requirement | Version / Details |
+|---|---|
+| Home Assistant | 2025.1 or newer |
+| NBE controller | V7 or v13 on the local network, with a fixed IP address |
+| Serial number and pincode | Both shown in menu 18 on the burner display |
 
-## Compatible burners
+**Compatible burners:** NBE RTB 10, 10 VAC, 16, 16 VAC, 30, 30 VAC, 50, 50 VAC, 80 and NBE BS+ (Blackstar+) 10, 16, 25 (v13 controller). Tested with a Black Star 1016 and a V7 controller. If you do not know your model, compare with the [NBE manual](https://www.nbe.dk/wp-content/uploads/2017/07/RTB-BS-Manual-V13-ENG-08.03.2017.pdf).
 
-* NBE RTB 10, 10 VAC, 16, 16 VAC, 30, 30 VAC, 50, 50 VAC, 80 (v13 controller)
-* NBE BS+ (Blackstar+) 10, 16, 25 (v13 controller)
+---
 
-Tested with a Black Star 1016 and a V7 controller. Other models are not verified. If you do not know your model, open the burner door and compare with the [NBE manual](https://www.nbe.dk/wp-content/uploads/2017/07/RTB-BS-Manual-V13-ENG-08.03.2017.pdf).
+## Installation
 
-## Install with HACS (recommended)
+### Automatic — via HACS
 
-1. In HACS, open the menu, choose **Custom repositories**, and add `https://github.com/macokay/nbe-blackstar` with type **Integration**.
-2. Find **NBE Black Star** in HACS and download it.
+1. Open **HACS** in Home Assistant.
+2. Go to **Integrations** → three-dot menu (⋮) → **Custom repositories**.
+3. Add `https://github.com/macokay/nbe-blackstar` as **Integration**.
+4. Search for **NBE Black Star** and click **Download**.
+5. Restart Home Assistant.
+
+### Manual
+
+1. Download the latest release from [GitHub Releases](https://github.com/macokay/nbe-blackstar/releases).
+2. Copy the `custom_components/nbe_blackstar` folder to your `config/custom_components/` directory.
 3. Restart Home Assistant.
-4. Go to **Settings, Devices & services, Add integration** and choose **NBE Black Star**.
-5. Enter the controller IP address, serial number and pincode. The port defaults to 8483. Choose `da` or `en` for entity names.
 
-<img src="docs/img/config-flow.png" alt="NBE Black Star setup dialog with controller IP, serial number, pincode, port and language" width="420">
+### Alternative — Docker / MQTT bridge
 
-After setup, open the integration and choose **Configure** to change the entity name language and the seconds between reads (default 60). Entity names start with the device name you chose during setup (default `NBE Black Star`), for example `NBE Black Star Boiler temperature`. To change the device name, remove the integration and add it again.
+For MQTT, or a system other than Home Assistant, see [docs/docker.md](docs/docker.md). **Use one, never both against the same controller.** The controller answers one client at a time.
 
-<img src="docs/img/options.png" alt="NBE Black Star options dialog with entity name language and seconds between reads" width="560">
+---
 
-The pincode is stored only in the config entry (Home Assistant `.storage`) and is never logged. The burner energy total is kept in `nbe_blackstar_energy_<serial>.json` in the Home Assistant config directory, so it survives restarts.
+## Configuration
 
-## Install with Docker (MQTT bridge)
+1. Go to **Settings → Devices & Services → Add Integration**.
+2. Search for **NBE Black Star**.
+3. Enter the required fields:
 
-Use this if you want MQTT, or a system other than Home Assistant.
+| Field | Description |
+|---|---|
+| Controller IP address | The controller's IP on your network |
+| Serial number | Shown in menu 18 on the burner display |
+| Pincode | Shown in menu 18 on the burner display. Stored only in the config entry and never logged |
+| Port | Controller UDP port. Default `8483` |
+| Entity name language | `da` or `en` |
+| Device name | Default `NBE Black Star`. Entity names start with it, for example `NBE Black Star Boiler temperature` |
 
-```
-cp .env.local.example .env.local   # fill in NBE_PASS and MQTT_PASS
-docker compose -f deploy/docker-compose.yml up -d --build
-docker compose -f deploy/docker-compose.yml logs -f nbe
-```
+<p align="center">
+  <img src="docs/img/config-flow.png" alt="NBE Black Star setup dialog" width="420" />
+</p>
 
-The image runs as a non-root user and has a healthcheck. It is unhealthy if the controller has not answered for 5 minutes. Compose builds the image for your machine (amd64 or arm64). Release images for both architectures are published to `ghcr.io/macokay/nbe-blackstar`.
+Post-setup options are available via **Configure** on the integration card:
 
-Entities appear through MQTT discovery under the device name from your configuration (default `NBE Black Star`). Sensors use `sensor.nbe_<object_id>`, pumps and alarm use `binary_sensor.nbe_*`.
+| Option | Description | Default |
+|---|---|---|
+| Entity name language | `da` or `en` | As entered at setup |
+| Seconds between reads | How often the controller is read (10 to 3600) | 60 |
 
-### Configuration
+---
 
-Every setting comes from an environment variable. `config.json` is optional and may hold non-secret overrides (see `docs/config.json-example`). Secrets are environment-only.
+## Data
 
-| Variable | Required | Default | Notes |
-|---|---|---|---|
-| `NBE_SERIAL` | yes | | Controller serial number (menu 18). |
-| `NBE_IP` | yes | | Controller IP (use a fixed address). |
-| `NBE_PORT` | no | `8483` | Controller UDP port. |
-| `NBE_PASS` | yes | | Controller pincode, shown on the burner display (menu 18). Secret. |
-| `MQTT_IP` | yes | | MQTT broker host. |
-| `MQTT_PORT` | no | `1883` | MQTT broker port. |
-| `MQTT_USER` | no | | MQTT user. |
-| `MQTT_PASS` | yes | | MQTT password. Secret. |
-| `MQTT_CLIENT_NAME` | no | `nbe-blackstar` | MQTT client id. |
-| `REFRESH_RATE` | no | `60` | Seconds between reads. |
-| `HA_PREFIX` | no | `homeassistant` | Home Assistant discovery prefix. |
-| `NBE_DEVICE_ID` | no | `nbe_<serial>` | Device id. Keeps entity topics stable when changed. |
-| `NBE_DEVICE_NAME` | no | `NBE Black Star` | Device name in Home Assistant. |
-| `NBE_LANG` | no | `da` | Entity names: `da` or `en`. Topics and entity ids do not change with the language. |
-| `NBE_DEBUG` | no | `false` | Debug logging. |
-| `NBE_ALLOW_WRITE` | no | unset | Leave unset. Writes are not implemented in this build. |
+### Entities
 
-Copy `.env.local.example` to `.env.local`, fill in the secrets, and keep it out of git (it is gitignored).
+| Entity | Unit | Description |
+|---|---|---|
+| `sensor.nbe_kedel_temperatur` | °C | Boiler temperature |
+| `sensor.nbe_kedel_maal` | °C | Boiler target |
+| `sensor.nbe_varmtvand` | °C | Hot water |
+| `sensor.nbe_varmtvand_maal` | °C | Hot water target |
+| `sensor.nbe_gulv_fremloeb` | °C | Floor heating flow |
+| `sensor.nbe_gulv_oensket` | °C | Floor heating target |
+| `sensor.nbe_skakt_temperatur` | °C | Shaft temperature |
+| `sensor.nbe_retur_temperatur` | °C | Return temperature |
+| `sensor.nbe_rog_temperatur` | °C | Flue gas temperature |
+| `sensor.nbe_udetemperatur` | °C | Outdoor temperature |
+| `sensor.nbe_braendereffekt_kw` | kW | Burner power |
+| `sensor.nbe_braenderbelastning` | % | Burner load |
+| `sensor.nbe_braender_energi_kwh` | kWh | Burner energy, for the Energy dashboard |
+| `sensor.nbe_ilt` | % | Oxygen |
+| `sensor.nbe_ilt_maal` | % | Oxygen target |
+| `sensor.nbe_gulv_ventil` | % | Floor valve |
+| `sensor.nbe_stromforbrug_ma` | mA | Current draw |
+| `sensor.nbe_lysniveau` | % | Light level |
+| `sensor.nbe_driftstilstand` | | Operating state (code) |
+| `sensor.nbe_pellets_magasin` | kg | Pellets in hopper |
+| `sensor.nbe_askeskuffe_minutter` | min | Ash box minutes |
+| `sensor.nbe_forbrug_teller` | kg | Pellet consumption counter |
+| `binary_sensor.nbe_kedelpumpe` | | Boiler pump |
+| `binary_sensor.nbe_gulvpumpe` | | Floor pump |
+| `binary_sensor.nbe_alarm` | | Alarm (meaning not confirmed, see below) |
 
-### Run as a systemd service (without Docker)
+Sensors that are not connected on your burner show unknown. The full list of controller values is in [docs/values.md](docs/values.md).
 
-1. Create a system user `nbe`.
-2. Copy `src/nbe_blackstar/` to `/opt/nbe/nbe_blackstar`.
-3. Put all variables from the table in `/etc/nbe/nbe.env` (mode 600).
-4. Install the runtime: `python3 -m venv /opt/nbe/venv && /opt/nbe/venv/bin/pip install -r requirements.txt`
-5. Copy `deploy/nbe.service` to `/etc/systemd/system/`, then `systemctl enable --now nbe`.
+<p align="center">
+  <img src="docs/img/device.png" alt="The NBE Black Star device in Home Assistant, with its sensors" width="520" />
+</p>
 
-## Known gaps
+### Update interval
 
-* `Pellets in hopper` (`operating_data/content`) reports negative values on the test controller. It is shown as unknown until the meaning is confirmed.
-* The alarm entity is the controller flag `off_on_alarm`. Its meaning is not confirmed, so do not use it for notifications yet.
-* The text state of the operating mode and the event log are not decoded yet.
-* Return, flue gas and current readings come from the controller manual (menu 15 and 18). Sensors that are not connected show unknown.
+The controller is read every 60 seconds by default (configurable). A missed read is retried once, and the last values are kept until 3 reads in a row have failed.
 
-See [docs/values.md](docs/values.md) for the full list of readings.
+---
 
-## Development
+## Updating
 
-```
-python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
-.venv/bin/pytest
-```
+**Via HACS:** HACS will notify you when an update is available. Click **Update** on the integration card.
 
-The tests run offline. They cover the write guard, schema, secrets, frame decoding, entity discovery, query retry and the MQTT last will.
+**Manual:** Replace the `custom_components/nbe_blackstar` folder with the new version and restart Home Assistant.
 
-The sensors and their names are defined in `src/nbe_blackstar/nbe_schema`. Columns: `RESOURCE, METHOD, TYPE, NAME, ICON, STATE-CLASS, DEVICE-CLASS, UNIT, OBJECT_ID`.
+---
 
-More: [docs/CHANGELOG.md](docs/CHANGELOG.md), [SECURITY.md](.github/SECURITY.md), [docs/TODO.md](docs/TODO.md), [CONTRIBUTING.md](.github/CONTRIBUTING.md), [docs/runbook.md](docs/runbook.md).
+## Known Limitations
+
+- `Pellets in hopper` reports negative values on the test controller and is shown as unknown until it is calibrated
+- The alarm entity is the controller flag `off_on_alarm`. Its meaning is not confirmed, so do not use it for notifications yet
+- The operating state is a code. Its text mapping and the event log are not decoded yet
+- The pellet counter unit (kg) is inferred from the burner energy and not yet confirmed on the display
+- Tested on one Black Star 1016 with a V7 controller. Other models are not verified
+
+---
 
 ## Credits
 
-Based on [e1z0/nbe-blackstar-homeassistant](https://github.com/e1z0/nbe-blackstar-homeassistant) and the protocol work of Anders Nylund (2013). See [docs/CREDITS.md](docs/CREDITS.md).
+- [e1z0/nbe-blackstar-homeassistant](https://github.com/e1z0/nbe-blackstar-homeassistant) — the original integration
+- Anders Nylund — protocol reverse engineering (2013)
+
+More: [CHANGELOG](docs/CHANGELOG.md), [roadmap](docs/TODO.md), [contributing](.github/CONTRIBUTING.md), [security](.github/SECURITY.md), [credits](docs/CREDITS.md).
+
+---
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0 or later (see [LICENSE](LICENSE)).
+&copy; 2026 Mac O Kay. Licensed under the GNU General Public License v3.0 or later. See [LICENSE](LICENSE) for details.
 
-Some files keep their original notices:
-* `src/nbe_blackstar/protocol.py`, `src/nbe_blackstar/frames.py`: GPL-2.0 or later (Anders Nylund, 2013). Compatible with GPL-3.0.
-* `src/nbe_blackstar/bridge.py`, `src/nbe_blackstar/ha_classes.py`, `src/nbe_blackstar/settings.py`: BSD-3-Clause (e1z0, 2021-2022). Compatible with GPL-3.0.
+Some files keep their original notices: `src/nbe_blackstar/protocol.py` and `frames.py` are GPL-2.0-or-later (Anders Nylund, 2013), and `bridge.py`, `ha_classes.py` and `settings.py` are BSD-3-Clause (e1z0, 2021-2022). Both are compatible with GPL-3.0.
