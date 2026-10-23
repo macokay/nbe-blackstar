@@ -1,0 +1,15 @@
+*.*~
+*.pyc
+__pycache__/
+.env
+.env.*
+!.env.example
+!.env.local.example
+*.key
+*.pem
+credentials*
+.DS_Store
+config.json
+.pytest_cache/
+.ruff_cache/
+.venv/
