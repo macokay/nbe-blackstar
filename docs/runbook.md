@@ -4,8 +4,8 @@
 
 ```
 cp .env.local.example .env.local   # fill in the values
-docker compose up -d --build
-docker compose logs -f nbe
+docker compose -f deploy/docker-compose.yml up -d --build
+docker compose -f deploy/docker-compose.yml logs -f nbe
 ```
 
 From a release image instead of building: `docker run -d --name nbe --restart unless-stopped -v nbe-data:/var/lib/nbe --env-file .env.local ghcr.io/macokay/nbe-blackstar:<version>`.

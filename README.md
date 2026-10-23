@@ -62,8 +62,8 @@ Use this if you want MQTT, or a system other than Home Assistant.
 
 ```
 cp .env.local.example .env.local   # fill in NBE_PASS and MQTT_PASS
-docker compose up -d --build
-docker compose logs -f nbe
+docker compose -f deploy/docker-compose.yml up -d --build
+docker compose -f deploy/docker-compose.yml logs -f nbe
 ```
 
 The image runs as a non-root user and has a healthcheck. It is unhealthy if the controller has not answered for 5 minutes. Compose builds the image for your machine (amd64 or arm64). Release images for both architectures are published to `ghcr.io/macokay/nbe-blackstar`.
@@ -72,7 +72,7 @@ Entities appear through MQTT discovery under the device name from your configura
 
 ### Configuration
 
-Every setting comes from an environment variable. `config.json` is optional and may hold non-secret overrides (see `config.json-example`). Secrets are environment-only.
+Every setting comes from an environment variable. `config.json` is optional and may hold non-secret overrides (see `docs/config.json-example`). Secrets are environment-only.
 
 | Variable | Required | Default | Notes |
 |---|---|---|---|
@@ -101,7 +101,7 @@ Copy `.env.local.example` to `.env.local`, fill in the secrets, and keep it out 
 2. Copy `src/nbe_blackstar/` to `/opt/nbe/nbe_blackstar`.
 3. Put all variables from the table in `/etc/nbe/nbe.env` (mode 600).
 4. Install the runtime: `python3 -m venv /opt/nbe/venv && /opt/nbe/venv/bin/pip install -r requirements.txt`
-5. Copy `nbe.service` to `/etc/systemd/system/`, then `systemctl enable --now nbe`.
+5. Copy `deploy/nbe.service` to `/etc/systemd/system/`, then `systemctl enable --now nbe`.
 
 ## Known gaps
 
@@ -123,11 +123,11 @@ The tests run offline. They cover the write guard, schema, secrets, frame decodi
 
 The sensors and their names are defined in `src/nbe_blackstar/nbe_schema`. Columns: `RESOURCE, METHOD, TYPE, NAME, ICON, STATE-CLASS, DEVICE-CLASS, UNIT, OBJECT_ID`.
 
-More: [CHANGELOG.md](CHANGELOG.md), [SECURITY.md](SECURITY.md), [TODO.md](TODO.md), [CONTRIBUTING.md](CONTRIBUTING.md), [docs/runbook.md](docs/runbook.md).
+More: [docs/CHANGELOG.md](docs/CHANGELOG.md), [SECURITY.md](.github/SECURITY.md), [docs/TODO.md](docs/TODO.md), [CONTRIBUTING.md](.github/CONTRIBUTING.md), [docs/runbook.md](docs/runbook.md).
 
 ## Credits
 
-Based on [e1z0/nbe-blackstar-homeassistant](https://github.com/e1z0/nbe-blackstar-homeassistant) and the protocol work of Anders Nylund (2013). See [CREDITS.md](CREDITS.md).
+Based on [e1z0/nbe-blackstar-homeassistant](https://github.com/e1z0/nbe-blackstar-homeassistant) and the protocol work of Anders Nylund (2013). See [docs/CREDITS.md](docs/CREDITS.md).
 
 ## License
 

@@ -18,7 +18,7 @@ dependencies = [
 [project.urls]
 Homepage = "https://github.com/macokay/nbe-blackstar"
 Issues = "https://github.com/macokay/nbe-blackstar/issues"
-Changelog = "https://github.com/macokay/nbe-blackstar/blob/master/CHANGELOG.md"
+Changelog = "https://github.com/macokay/nbe-blackstar/blob/master/docs/CHANGELOG.md"
 
 [tool.setuptools.dynamic]
 version = { attr = "nbe_blackstar.__version__" }
