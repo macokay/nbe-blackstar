@@ -23,5 +23,5 @@ operating_data/photo_level,get,sensor,Lysniveau,mdi:brightness-6,measurement,non
 operating_data/boiler_pump_state,get,binary_sensor,Kedelpumpe,mdi:pump,none,running,none,kedelpumpe
 operating_data/house_pump_state,get,binary_sensor,Gulvpumpe,mdi:pump,none,running,none,gulvpumpe
 operating_data/off_on_alarm,get,binary_sensor,Alarm,mdi:alert,none,problem,none,alarm
-consumption_data/counter,get,sensor,Pellet forbrug teller,mdi:counter,total_increasing,none,none,forbrug_teller
+consumption_data/counter,get,sensor,Pellet forbrug teller,mdi:counter,total_increasing,weight,kg,forbrug_teller
 energy/burner_kwh,get,sensor,Brænderenergi,mdi:lightning-bolt,total_increasing,energy,kWh,braender_energi_kwh

@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from datetime import timedelta
 
@@ -10,21 +11,38 @@ from .const import CONF_DEVICE_NAME, CONF_LANG, CONF_SERIAL, DEFAULT_DEVICE_NAME
 
 log = logging.getLogger(__name__)
 
+MAX_FAILURES = 3
+RETRY_DELAY = 2
+
 
 class NbeCoordinator(DataUpdateCoordinator):
     def __init__(self, hass, entry, reader: NbeReader, interval: int):
         super().__init__(hass, log, config_entry=entry, name=DOMAIN, update_interval=timedelta(seconds=interval))
         self.reader = reader
         self.firmware = None
+        self._failures = 0
 
     async def _async_update_data(self):
         try:
-            data = await self.hass.async_add_executor_job(self.reader.poll)
+            data = await self._poll()
         except Exception as err:
+            # the controller misses a poll now and then; keep the last values until it has failed MAX_FAILURES times in a row
+            self._failures += 1
+            if self.data is not None and self._failures < MAX_FAILURES:
+                log.debug("Controller poll failed (%d in a row): %s", self._failures, type(err).__name__)
+                return self.data
             raise UpdateFailed(f"Unable to query controller: {type(err).__name__}") from err
+        self._failures = 0
         if self.firmware is None:
             await self._retry_firmware()
         return data
+
+    async def _poll(self):
+        try:
+            return await self.hass.async_add_executor_job(self.reader.poll)
+        except Exception:
+            await asyncio.sleep(RETRY_DELAY)
+            return await self.hass.async_add_executor_job(self.reader.poll)
 
     async def _retry_firmware(self):
         try:

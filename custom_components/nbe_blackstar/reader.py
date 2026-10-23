@@ -98,7 +98,6 @@ class NbeReader:
             raise ConnectionError("controller returned no data")
         self.slow_refreshed = self._cycles % SLOW_EVERY == 0
         if self.slow_refreshed:
-            self._slow = {}
             try:
                 self._slow = self._query(SLOW_QUERIES)
             except Exception as e:
