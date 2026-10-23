@@ -50,6 +50,8 @@ Tested with a Black Star 1016 and a V7 controller. Other models are not verified
 
 After setup, open the integration and choose **Configure** to change the entity name language and the seconds between reads (default 60).
 
+<img src="docs/img/options.png" alt="NBE Black Star options dialog with entity name language and seconds between reads" width="560">
+
 The pincode is stored only in the config entry (Home Assistant `.storage`) and is never logged. The burner energy total is kept in `nbe_blackstar_energy_<serial>.json` in the Home Assistant config directory, so it survives restarts.
 
 ## Install with Docker (MQTT bridge)
