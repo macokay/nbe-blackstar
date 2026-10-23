@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.11
+- Home Assistant integration: a missed controller poll no longer makes every entity unavailable. The integration retries once after 2 seconds and keeps the last values until 3 polls in a row have failed.
+- Pellet counter (`sensor.nbe_forbrug_teller`) is reported in kg with device class weight. The unit is inferred from the burner energy and is not yet confirmed on the display. Home Assistant may show a unit change in the statistics for this sensor.
+- The slow pellet counter keeps its last value when its query fails, instead of dropping out for that cycle.
+- Runbook: moving from the Docker/MQTT bridge to the HACS integration.
+- CI: the image is also built for arm64 and imports the bridge module there.
+
 ## 0.0.10
 - The device is shown as made by Mac O Kay in Home Assistant, in both the HACS integration and the Docker/MQTT bridge. The model is still Black Star 1016 (V7).
 - README rewritten: the HACS integration is the recommended install, the Docker/MQTT bridge is the alternative, and the two must not run against the same controller.
