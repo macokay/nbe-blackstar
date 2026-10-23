@@ -1,23 +1,30 @@
 # NBE Black Star (Blackstar+, RTB) for Home Assistant
 
 [![Release](https://img.shields.io/github/v/release/macokay/nbe-blackstar)](https://github.com/macokay/nbe-blackstar/releases)
-[![License](https://img.shields.io/github/license/macokay/nbe-blackstar)](LICENSE)
+[![License](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)
 [![HACS](https://img.shields.io/badge/HACS-custom-orange.svg)](https://hacs.xyz)
 
 Reads an NBE pellet burner controller (V7 / v13) over the local network and shows its values in Home Assistant: temperatures, burner power and load, pumps, oxygen, operating state and a burner energy total. Read-only: it never changes the burner.
 
 There are two ways to run it. Pick one.
 
-| | HACS integration (recommended) | Docker / MQTT bridge |
-|---|---|---|
-| Needs MQTT broker | no | yes |
-| Runs | inside Home Assistant | as a container or systemd service |
-| Setup | add repository, enter IP, serial and pincode | environment variables, then MQTT discovery |
-| Works with | Home Assistant | Home Assistant, OpenHAB, ioBroker, Node-RED |
+**HACS integration (recommended)**
+* Runs inside Home Assistant. No MQTT broker needed.
+* Setup: add the repository, enter the controller IP, serial number and pincode.
+* Works with Home Assistant only.
+
+**Docker / MQTT bridge**
+* Runs as a container or systemd service and publishes to an MQTT broker.
+* Setup: environment variables, then MQTT discovery.
+* Works with Home Assistant, OpenHAB, ioBroker and Node-RED.
 
 > **Use one, never both against the same controller.** The controller answers one client at a time. Two clients cause request errors and duplicate entities.
 
 > **Status: under development.** Tested with one Black Star 1016 (V7 controller). Entity names and settings may change before 1.0. Feedback and testers with other models are welcome.
+
+<img src="docs/img/device.png" alt="The NBE Black Star device in Home Assistant, with its sensors" width="520">
+
+<img src="docs/img/boiler-demo.png" alt="Boiler dashboard in Home Assistant with temperatures, burner power and 24-hour graphs" width="720">
 
 ## Requirements
 
@@ -41,7 +48,11 @@ Tested with a Black Star 1016 and a V7 controller. Other models are not verified
 4. Go to **Settings, Devices & services, Add integration** and choose **NBE Black Star**.
 5. Enter the controller IP address, serial number and pincode. The port defaults to 8483. Choose `da` or `en` for entity names.
 
+<img src="docs/img/config-flow.png" alt="NBE Black Star setup dialog with controller IP, serial number, pincode, port and language" width="420">
+
 After setup, open the integration and choose **Configure** to change the entity name language and the seconds between reads (default 60).
+
+<img src="docs/img/options.png" alt="NBE Black Star options dialog with entity name language and seconds between reads" width="560">
 
 The pincode is stored only in the config entry (Home Assistant `.storage`) and is never logged. The burner energy total is kept in `nbe_blackstar_energy_<serial>.json` in the Home Assistant config directory, so it survives restarts.
 
