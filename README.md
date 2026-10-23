@@ -48,6 +48,8 @@ Tested with a Black Star 1016 and a V7 controller. Other models are not verified
 4. Go to **Settings, Devices & services, Add integration** and choose **NBE Black Star**.
 5. Enter the controller IP address, serial number and pincode. The port defaults to 8483. Choose `da` or `en` for entity names.
 
+<img src="docs/img/config-flow.png" alt="NBE Black Star setup dialog with controller IP, serial number, pincode, port and language" width="420">
+
 After setup, open the integration and choose **Configure** to change the entity name language and the seconds between reads (default 60).
 
 <img src="docs/img/options.png" alt="NBE Black Star options dialog with entity name language and seconds between reads" width="560">
