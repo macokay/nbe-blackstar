@@ -78,7 +78,7 @@ Confidence:
 | `settings/hot_water/diff_under` | Hot water hysteresis | candidate |
 | `settings/regulation/*` | Regulation gains and power limits | skip (configuration, change only with the vendor) |
 
-Settings are read only. Writing is not implemented, see [TODO.md](../TODO.md).
+Settings are read only. Writing is not implemented, see [TODO.md](TODO.md).
 
 ## consumption_data
 

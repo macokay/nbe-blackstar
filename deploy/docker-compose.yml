@@ -2,12 +2,12 @@ services:
     nbe:
         container_name: nbe
         build:
-            context: .
+            context: ..
             dockerfile: docker/Dockerfile
         image: nbe:local
         hostname: nbe
         restart: unless-stopped
-        env_file: .env.local
+        env_file: ../.env.local
         volumes:
             - nbe-data:/var/lib/nbe
 
