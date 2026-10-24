@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.12
+- Brand icon for the integration (shown in Home Assistant and HACS).
+- The alarm entity (`binary_sensor.nbe_alarm`) is a plain on/off sensor without the "problem" class. The controller flag behind it is not defined in the V7 manual and reads on during normal operation, so it should not be used for notifications.
+- README rewritten in the same format as the other integrations. Docker/MQTT bridge details moved to `docs/docker.md`.
+- Docs: `Pellets in hopper` is the controller's magazine content in kg (menu 8), which you set and which only counts down. The pellet counter unit (kg) is still inferred and waits for a refill test.
+
 ## 0.0.11
 - Home Assistant integration: a missed controller poll no longer makes every entity unavailable. The integration retries once after 2 seconds and keeps the last values until 3 polls in a row have failed.
 - Pellet counter (`sensor.nbe_forbrug_teller`) is reported in kg with device class weight. The unit is inferred from the burner energy and is not yet confirmed on the display. Home Assistant may show a unit change in the statistics for this sensor.
