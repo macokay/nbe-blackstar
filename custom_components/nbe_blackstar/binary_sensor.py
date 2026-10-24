@@ -15,7 +15,7 @@ class NbeBinarySensor(NbeEntity, BinarySensorEntity):
         super().__init__(coordinator, entry, row)
         self.entity_id = f"binary_sensor.nbe_{self._object_id}"
         self._attr_icon = row[5]
-        self._attr_device_class = BinarySensorDeviceClass(row[7])
+        self._attr_device_class = None if row[7] == "none" else BinarySensorDeviceClass(row[7])
 
     @property
     def is_on(self):

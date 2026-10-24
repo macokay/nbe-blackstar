@@ -41,7 +41,7 @@ ENTITIES = (
     ("operating_data/photo_level", "sensor", "lysniveau", "Lysniveau", "Light level", "mdi:brightness-6", "measurement", "none", "%"),
     ("operating_data/boiler_pump_state", "binary_sensor", "kedelpumpe", "Kedelpumpe", "Boiler pump", "mdi:pump", "none", "running", "none"),
     ("operating_data/house_pump_state", "binary_sensor", "gulvpumpe", "Gulvpumpe", "Floor pump", "mdi:pump", "none", "running", "none"),
-    ("operating_data/off_on_alarm", "binary_sensor", "alarm", "Alarm", "Alarm", "mdi:alert", "none", "problem", "none"),
+    ("operating_data/off_on_alarm", "binary_sensor", "alarm", "Alarm", "Alarm", "mdi:alert", "none", "none", "none"),
     ("consumption_data/counter", "sensor", "forbrug_teller", "Pellet forbrug teller", "Pellet consumption counter", "mdi:counter", "total_increasing", "weight", "kg"),
     ("energy/burner_kwh", "sensor", "braender_energi_kwh", "Brænderenergi", "Burner energy", "mdi:lightning-bolt", "total_increasing", "energy", "kWh"),
 )

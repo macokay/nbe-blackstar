@@ -163,9 +163,10 @@ The controller is read every 60 seconds by default (configurable). A missed read
 ## Known Limitations
 
 - `Pellets in hopper` reports negative values on the test controller and is shown as unknown until it is calibrated
-- The alarm entity is the controller flag `off_on_alarm`. Its meaning is not confirmed, so do not use it for notifications yet
+- The alarm entity is the controller flag `off_on_alarm`. The V7 manual does not define it and it reads on while the burner runs normally, so it is shown as a plain on/off sensor and should not be used for notifications
 - The operating state is a code. Its text mapping and the event log are not decoded yet
-- The pellet counter unit (kg) is inferred from the burner energy and not yet confirmed on the display
+- The pellet counter unit (kg) is inferred from the burner energy and is not in the V7 manual. A refill test will confirm it
+- `Pellets in hopper` is the controller's magazine content in kg (menu 8). You set it, and it only counts down as pellets are used, so it can be stale or negative
 - Tested on one Black Star 1016 with a V7 controller. Other models are not verified
 
 ---
