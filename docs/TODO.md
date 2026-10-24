@@ -8,7 +8,7 @@ Status: under development. Read-only. Items here are open work, not promises. Se
 - [ ] Per-entity availability for a key that goes missing from the data. Open until it is seen in practice.
 - [ ] Energy total when moving from the bridge to HACS: the procedure is in [runbook.md](runbook.md). Decide whether to carry the old total forward.
 - [ ] Value audit: [values.md](values.md) lists every value. Still to confirm: units of `pressure`, `feed_*`, `fan_speed`, `milli_ampere`; the `state` text mapping.
-- [ ] Pellet counter: unit is set to kg (inferred, see values.md). Confirm against the burner display and that the counter stays monotonic.
+- [ ] **Waiting:** pellet counter unit. It is shown as kg, inferred from the burner energy (about 4.7 kWh per unit) and from the controller counting pellets in kg for cleaning. The V7 manual has no consumption counter. Refill test pending: note the counter before and after the next pellet delivery and compare with the delivered kg.
 - [ ] Pellet magazine level: calibrate from the logged raw counter against manual refill records.
 - [ ] Verify the multi-arch image on real arm64 hardware. CI already imports the arm64 image under QEMU.
 

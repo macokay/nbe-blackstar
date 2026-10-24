@@ -14,7 +14,7 @@ Health: `docker inspect -f '{{.State.Health.Status}}' nbe`. The container is unh
 
 ## Deploy (systemd)
 
-See the README. Logs: `journalctl -u nbe -f`.
+See [docker.md](docker.md). Logs: `journalctl -u nbe -f`.
 
 ## Verify after a change
 

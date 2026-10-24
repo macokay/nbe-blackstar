@@ -50,7 +50,7 @@ Confidence:
 | `house_pump_state` | Floor pump on | 0/1 | inferred | exposed as `gulvpumpe` |
 | `dhw_valve_state` | Hot water valve | 0/1 | inferred | candidate |
 | `house_valve_state` | Floor valve position | % | inferred | exposed as `gulv_ventil` |
-| `off_on_alarm` | Alarm flag, or on/off state | 0/1 | **unknown** | exposed as `alarm`, but **do not use for notifications** until the meaning is confirmed |
+| `off_on_alarm` | Alarm flag, or on/off state | 0/1 | **unknown** | exposed as `alarm` as a plain on/off sensor (no "problem" class), and **do not use for notifications** until the meaning is confirmed. The V7 manual does not define this flag |
 | `feed_low`, `feed_medium`, `feed_high` | Feed rate per power level | unknown | unknown | candidate after checking the unit |
 | `corr_low`, `corr_medium`, `corr_high` | Correction factor per power level | % | unknown | skip until understood |
 | `ash_clean`, `compressor_clean` | Time since cleaning | unknown | inferred | candidate; useful for maintenance |
