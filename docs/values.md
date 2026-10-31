@@ -44,13 +44,13 @@ Confidence:
 | `distance` | Pellet level distance | unknown | unknown | candidate, but meaning unknown |
 | `photo_level` | Flame light (photo cell) | % | inferred | exposed as `lysniveau`. Reads 0 in daylight, so it may be the flame cell, not room light |
 | `content` | Pellet magazine level | kg | inferred | exposed as `pellets_magasin`; negative values, so unreliable until calibrated |
-| `state` | Operating state code | code | inferred | exposed as `driftstilstand`; the text mapping is not known yet |
+| `state` | Operating state code | code | inferred | exposed as `driftstilstand`. Observed on 2026-10-30: `20` = the display alarm "ALARM INGEN ILD - BRÆNDSEL?" (confirmed by photo and history), `2` = start-up, about 3 minutes before `7`, `7` = burning, `9` = standby between cycles, `0` = seen once for one minute. Only `20` is confirmed against the display |
 | `substate`, `substate_sec` | Sub-state and seconds in it | code, s | inferred | candidate |
 | `boiler_pump_state` | Boiler pump on | 0/1 | confirmed (pump on while burning) | exposed as `kedelpumpe` |
 | `house_pump_state` | Floor pump on | 0/1 | inferred | exposed as `gulvpumpe` |
 | `dhw_valve_state` | Hot water valve | 0/1 | inferred | candidate |
 | `house_valve_state` | Floor valve position | % | inferred | exposed as `gulv_ventil` |
-| `off_on_alarm` | Alarm flag, or on/off state | 0/1 | **unknown** | exposed as `alarm` as a plain on/off sensor (no "problem" class), and **do not use for notifications** until the meaning is confirmed. The V7 manual does not define this flag |
+| `off_on_alarm` | Three-way flag: off, on, alarm | 0/1/other | inferred | exposed as `alarm`. It reads `1` (on) while the burner runs. During the no-fuel alarm (state `20`, 2026-10-30) it was neither 0 nor 1, so the binary sensor showed unknown. The name suggests off/on/alarm. A binary sensor cannot show a third value, so **do not use it for notifications**. The V7 manual does not define this flag |
 | `feed_low`, `feed_medium`, `feed_high` | Feed rate per power level | unknown | unknown | candidate after checking the unit |
 | `corr_low`, `corr_medium`, `corr_high` | Correction factor per power level | % | unknown | skip until understood |
 | `ash_clean`, `compressor_clean` | Time since cleaning | unknown | inferred | candidate; useful for maintenance |
@@ -64,7 +64,7 @@ Confidence:
 ## content vs counter
 
 - `content` (`operating_data/content`) is the magazine level estimate. It is negative on the test controller, so it stays unreliable until calibrated.
-- `consumption_data/counter` is the pellet counter. It is monotonic and is exposed as `forbrug_teller`, with unit kg (inferred, not yet checked on the display). Over 24 hours it rose 13.2 while the burner energy rose 62.2 kWh, about 4.7 kWh per unit, close to the energy content of pellets (about 4.8 kWh/kg). Confirm against the burner display before relying on it.
+- `consumption_data/counter` is the pellet counter. It is monotonic and is exposed as `forbrug_teller`, in **kg (confirmed)**. The same quantity is shown on the burner display as "Magasinindhold" (main screen silo graphic and menu 8), with a constant offset of 17200: the display read 29418 kg on 2026-10-24 and 29515 kg on 2026-10-30, a rise of 97, while the counter rose 97.3 (46618.0 to 46715.3). Cross-check: 586 kWh of burner energy over 7.7 days against a counter rise of 126.6 gives 4.63 kWh per kg, close to the energy content of pellets (about 4.8 kWh/kg). Despite its name and the V7 manual, the displayed "Magasinindhold" rose with consumption on firmware 7.0680. It does not count down.
 
 ## settings
 
