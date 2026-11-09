@@ -1,0 +1,39 @@
+name: dependabot auto-merge
+
+on:
+  pull_request_target:
+
+permissions: {}
+
+jobs:
+  auto-merge:
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Read update metadata
+        id: meta
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Auto-merge dev dependencies (minor and patch only)
+        env:
+          UPDATE_TYPE: ${{ steps.meta.outputs.update-type }}
+          DEPENDENCY_NAMES: ${{ steps.meta.outputs.dependency-names }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          if [ "$UPDATE_TYPE" = "version-update:semver-major" ]; then
+            echo "major update, leaving for manual review"
+            exit 0
+          fi
+          for name in $(echo "$DEPENDENCY_NAMES" | tr ',' ' '); do
+            case "$name" in
+              pytest|ruff) ;;
+              *) echo "$name is not a dev dependency, leaving for manual review"; exit 0 ;;
+            esac
+          done
+          gh pr merge --auto --squash "$PR_URL"
