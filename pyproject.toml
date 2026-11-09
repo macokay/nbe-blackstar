@@ -11,8 +11,8 @@ requires-python = ">=3.12"
 license = "GPL-3.0-or-later"
 license-files = ["LICENSE"]
 dependencies = [
-    "paho-mqtt==2.1.0",
-    "pycryptodome==4.2.0",
+    "paho-mqtt==2.2.0",
+    "pycryptodome==4.3.0",
 ]
 
 [project.urls]
