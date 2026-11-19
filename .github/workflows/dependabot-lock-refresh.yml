@@ -1,0 +1,55 @@
+name: dependabot lock refresh
+
+# Dependabot bumps requirements.in and pyproject.toml for runtime updates but does not
+# regenerate the hash-locked requirements files. This job regenerates them on Dependabot
+# pip branches and pushes the result. No PR code is executed: uv only resolves wheels
+# (--no-build), so the write token never runs package build scripts.
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+
+permissions: {}
+
+concurrency:
+  group: lock-refresh-${{ github.event.pull_request.number }}
+
+jobs:
+  refresh:
+    if: >-
+      github.actor == 'dependabot[bot]'
+      && startsWith(github.event.pull_request.head.ref, 'dependabot/pip/')
+      && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.13.7"
+          enable-cache: false
+      - name: Regenerate hash-locked requirements
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          for pair in requirements.in:requirements.txt requirements-dev.in:requirements-dev.txt; do
+            in="${pair%%:*}"; out="${pair##*:}"
+            # keep the pip-compile header, Dependabot reads it to pick its updater
+            header="$(sed -n '/^#/!q;p' "$out")"
+            uv pip compile --quiet --no-build --generate-hashes --python-version 3.14 \
+              --strip-extras --no-header "$in" -o "$out"
+            { printf '%s\n' "$header"; cat "$out"; } > "$out.tmp" && mv "$out.tmp" "$out"
+          done
+          if git diff --quiet; then echo "lock files already current"; exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore(deps): regenerate hash-locked requirements"
+          git push origin "HEAD:$HEAD_REF"
+          # pushes made with GITHUB_TOKEN do not trigger CI, so start it for the required checks
+          gh workflow run ci.yml --ref "$HEAD_REF"
