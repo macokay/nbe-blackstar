@@ -19,7 +19,8 @@ LANGS = ("da", "en")
 
 ENERGY_FILE = "nbe_blackstar_energy_{serial}.json"
 HOPPER_STORE = "nbe_blackstar_hopper_{serial}"
-HOPPER_SAVE_DELAY = 60
+HOPPER_SAVE_DELAY = 5
+HOPPER_SAVE_EVERY = 600
 COUNTER_RESOURCE = "consumption_data/counter"
 STATE_RESOURCE = "operating_data/state"
 # operating state 20 = no-fuel alarm ("ALARM INGEN ILD - BRÆNDSEL?")

@@ -139,3 +139,40 @@ def test_bad_stored_values_are_ignored():
 def test_refill_without_counter_is_refused():
     with pytest.raises(ValueError):
         Hopper().refill(144, counter=None, now=0)
+
+
+def test_partly_burned_silo_at_alarm_gives_no_factor_sample():
+    # 144 kg, 70 % burned (about 100 kg = 135 counter units) before a no-fuel alarm
+    h = Hopper()
+    h.update(0.0, alarm=True, now=0)
+    h.refill(144, counter=0.0, now=1)
+    h.update(0.0, alarm=False, now=2)
+    h.update(135.0, alarm=True, now=3)
+    assert h.factor_samples == []
+    assert h.level_kg == 0
+
+
+def test_double_entered_refill_is_rejected_as_a_factor_sample():
+    h = Hopper()
+    h.update(0.0, alarm=True, now=0)
+    h.refill(144, counter=0.0, now=1)
+    h.refill(144, counter=0.0, now=2)  # entered twice by mistake
+    h.update(0.0, alarm=False, now=3)
+    h.update(192.4, alarm=True, now=4)
+    assert h.factor_samples == []
+
+
+def test_update_reports_when_to_save():
+    h = Hopper()
+    h.update(0.0, alarm=True, now=0)
+    h.refill(144, counter=0.0, now=1)
+    h.update(0.0, alarm=False, now=2)
+    assert h.update(192.4, alarm=True, now=3) is True  # empty alarm: save now
+    assert h.update(192.4, alarm=False, now=4) is False
+    assert h.update(192.4, alarm=False, now=700) is False  # periodic sample is not an event
+
+
+def test_ignition_failure_is_not_a_save_event():
+    h = Hopper()
+    h.refill(144, counter=5000.0, now=0)
+    assert h.update(5001.0, alarm=True, now=1) is False

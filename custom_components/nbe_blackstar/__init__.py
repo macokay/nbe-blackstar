@@ -47,9 +47,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     async def _close_on_stop(_event: Event) -> None:
         # Home Assistant stop does not unload entries, so write the energy total and silo estimate here
+        await coordinator.async_flush()
         try:
             await hass.async_add_executor_job(reader.close)
-            await coordinator.async_flush()
         except Exception as e:
             _LOGGER.warning("Unable to close reader on stop: %s", type(e).__name__)
 
@@ -62,6 +62,11 @@ async def _reload(hass: HomeAssistant, entry: ConfigEntry) -> None:
     await hass.config_entries.async_reload(entry.entry_id)
 
 
+async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    # deleting the integration forgets the silo estimate too; a new setup starts from a blank estimate
+    await Store(hass, STORAGE_VERSION, HOPPER_STORE.format(serial=entry.data[CONF_SERIAL])).async_remove()
+
+
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     unloaded = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unloaded:
@@ -69,4 +74,3 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         await coordinator.async_flush()
         await hass.async_add_executor_job(coordinator.reader.close)
     return unloaded
-

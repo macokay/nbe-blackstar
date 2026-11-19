@@ -7,10 +7,13 @@ import statistics
 
 DEFAULT_FACTOR = 1.35
 DEFAULT_REFILL_KG = 144
-FACTOR_RANGE = (0.8, 2.0)
+# measured 1.34 and 1.37; a double-entered refill gives about 0.67 and a partly burned silo about 0.95
+FACTOR_RANGE = (1.1, 1.7)
 FACTOR_SAMPLES = 3
 # counter rise after a refill below this is a failed ignition, not an empty silo
 MIN_COUNTER_RISE_FOR_EMPTY = 5.0
+# a factor sample is only taken when the estimate said the silo was nearly empty before the alarm
+EMPTY_CONFIRM_KG = 15.0
 # burn rate is taken from the last 72 hours, at least 6 hours of data
 RATE_WINDOW_S = 72 * 3600
 RATE_MIN_SPAN_S = 6 * 3600
@@ -44,13 +47,16 @@ class Hopper:
         return statistics.median(self.factor_samples)
 
     def update(self, counter, alarm, now):
+        # returns True when the state changed in a way worth saving at once (an empty alarm or a rate sample)
         if counter is None:
-            return
+            return False
         self._advance(counter)
+        changed = False
         if alarm and not self.in_alarm:
-            self._on_alarm(counter)
+            changed = self._on_alarm(counter)
         self.in_alarm = alarm
-        self._sample(counter, now)
+        changed = self._sample(counter, now) or changed
+        return changed
 
     def refill(self, kg, counter, now):
         if counter is None:
@@ -117,8 +123,10 @@ class Hopper:
     def _on_alarm(self, counter):
         ignition_failed = self.counter_refill is not None and counter - self.counter_refill < MIN_COUNTER_RISE_FOR_EMPTY
         if ignition_failed:
-            return
-        if self.counter_at_empty is not None and self.kg_since_empty > 0 and counter > self.counter_at_empty:
+            return False
+        # the estimate just before the alarm: a sample is only trusted when the silo was nearly empty then
+        was_nearly_empty = self.level_kg is None or self.level_kg <= EMPTY_CONFIRM_KG
+        if was_nearly_empty and self.counter_at_empty is not None and self.kg_since_empty > 0 and counter > self.counter_at_empty:
             sample = (counter - self.counter_at_empty) / self.kg_since_empty
             if FACTOR_RANGE[0] <= sample <= FACTOR_RANGE[1]:
                 self.factor_samples = (self.factor_samples + [sample])[-FACTOR_SAMPLES:]
@@ -126,13 +134,15 @@ class Hopper:
         self.counter_last = counter
         self.counter_at_empty = counter
         self.kg_since_empty = 0.0
+        return True
 
     def _sample(self, counter, now, force=False):
         if not force and self.last_sample_ts is not None and now - self.last_sample_ts < SAMPLE_EVERY_S:
-            return
+            return False
         self.samples = [(t, c) for t, c in self.samples if now - t <= RATE_WINDOW_S]
         self.samples.append((now, counter))
         self.last_sample_ts = now
+        return force
 
 
 def _opt_float(value):

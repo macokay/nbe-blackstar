@@ -17,6 +17,7 @@ from .const import (
     DEFAULT_LANG,
     DOMAIN,
     HOPPER_SAVE_DELAY,
+    HOPPER_SAVE_EVERY,
     STATE_NO_FUEL,
     STATE_RESOURCE,
 )
@@ -34,6 +35,7 @@ class NbeCoordinator(DataUpdateCoordinator):
         self.firmware = None
         self.hopper = hopper
         self._store = store
+        self._saved_at = 0.0
         self._failures = 0
 
     async def _async_update_data(self):
@@ -55,7 +57,14 @@ class NbeCoordinator(DataUpdateCoordinator):
     def _track_silo(self, data):
         counter = as_number(data.get(COUNTER_RESOURCE))
         alarm = as_number(data.get(STATE_RESOURCE)) == STATE_NO_FUEL
-        self.hopper.update(counter, alarm, time.time())
+        now = time.time()
+        changed = self.hopper.update(counter, alarm, now)
+        # saved at once on an event, otherwise every HOPPER_SAVE_EVERY seconds: the SD card is spared
+        if changed or now - self._saved_at >= HOPPER_SAVE_EVERY:
+            self._save_hopper(now)
+
+    def _save_hopper(self, now=None):
+        self._saved_at = time.time() if now is None else now
         self._store.async_delay_save(self.hopper.to_dict, HOPPER_SAVE_DELAY)
 
     async def async_register_refill(self):
@@ -77,7 +86,7 @@ class NbeCoordinator(DataUpdateCoordinator):
         return as_number((self.data or {}).get(COUNTER_RESOURCE))
 
     async def _saved_changed(self):
-        self._store.async_delay_save(self.hopper.to_dict, HOPPER_SAVE_DELAY)
+        self._save_hopper()
         self.async_update_listeners()
 
     async def _poll(self):
