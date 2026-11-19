@@ -50,7 +50,7 @@ Confidence:
 | `house_pump_state` | Floor pump on | 0/1 | inferred | exposed as `gulvpumpe` |
 | `dhw_valve_state` | Hot water valve | 0/1 | inferred | candidate |
 | `house_valve_state` | Floor valve position | % | inferred | exposed as `gulv_ventil` |
-| `off_on_alarm` | Three-way flag: off, on, alarm | 0/1/other | inferred | exposed as `alarm`. It reads `1` (on) while the burner runs. During the no-fuel alarm (state `20`, 2026-10-30) it was neither 0 nor 1, so the binary sensor showed unknown. The name suggests off/on/alarm. A binary sensor cannot show a third value, so **do not use it for notifications**. The V7 manual does not define this flag |
+| `off_on_alarm` | Three-way flag: off, on, alarm | 0/1/other | inferred | The raw flag reads `1` (on) while the burner runs, and during the no-fuel alarm (state `20`, 2026-10-30) it was neither 0 nor 1. The V7 manual does not define it. Since 0.0.13 the `alarm` binary sensor is decoded from the operating state and this flag: on in state `20`, off while burning or on standby. The raw flag is kept in the `raw` attribute |
 | `feed_low`, `feed_medium`, `feed_high` | Feed rate per power level | unknown | unknown | candidate after checking the unit |
 | `corr_low`, `corr_medium`, `corr_high` | Correction factor per power level | % | unknown | skip until understood |
 | `ash_clean`, `compressor_clean` | Time since cleaning | unknown | inferred | candidate; useful for maintenance |

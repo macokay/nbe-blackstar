@@ -21,6 +21,8 @@ The image runs as a non-root user and has a healthcheck. It is unhealthy if the 
 
 Entities appear through MQTT discovery under the device name from your configuration (default `NBE Black Star`). Sensors use `sensor.nbe_<object_id>`, pumps and alarm use `binary_sensor.nbe_*`.
 
+The pellet silo estimate (pellets left, days left, refill reminder, refill and calibrate controls) is only in the HACS integration. The bridge does not publish it.
+
 ## Configuration
 
 Every setting comes from an environment variable. `config.json` is optional and may hold non-secret overrides (see [config.json-example](config.json-example)). Secrets are environment-only.

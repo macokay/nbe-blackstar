@@ -35,13 +35,14 @@
 - Boiler pump, floor pump and alarm as binary sensors
 - **Burner energy (kWh)** for the Home Assistant Energy dashboard, integrated from the burner power and kept across restarts
 - Pellet consumption counter (kg)
+- Pellet silo estimate with days left and a refill reminder, from the counter and your refill records
 - Entity names in Danish or English
 - Read-only: the integration never changes the burner
 - Talks to the controller on the local network, no cloud
 - A Docker/MQTT bridge is available as an alternative, see [docs/docker.md](docs/docker.md)
 
 <p align="center">
-  <img src="docs/img/boiler-demo.png" alt="Boiler dashboard in Home Assistant with temperatures, burner power and 24-hour graphs" width="720" />
+  <img src="docs/img/boiler-demo.png" alt="Boiler dashboard in Home Assistant with temperatures, burner power, pellet silo and 24-hour graphs" width="720" />
 </p>
 
 ---
@@ -105,6 +106,8 @@ Post-setup options are available via **Configure** on the integration card:
 |---|---|---|
 | Entity name language | `da` or `en` | As entered at setup |
 | Seconds between reads | How often the controller is read (10 to 3600) | 60 |
+| Silo capacity (kg) | Optional, for the pellet silo estimate | Empty |
+| Counter factor | Optional override of the learned counter factor. Use 1.0 once the auger is calibrated on the controller | Learned |
 
 ---
 
@@ -138,12 +141,18 @@ Post-setup options are available via **Configure** on the integration card:
 | `sensor.nbe_forbrug_teller` | kg | Pellet consumption counter |
 | `binary_sensor.nbe_kedelpumpe` | | Boiler pump |
 | `binary_sensor.nbe_gulvpumpe` | | Floor pump |
-| `binary_sensor.nbe_alarm` | | Alarm (meaning not confirmed, see below) |
+| `binary_sensor.nbe_alarm` | | Alarm, on in the no-fuel alarm (see below) |
+| `sensor.nbe_pellets_tilbage` | kg | Estimated pellets left in the silo |
+| `sensor.nbe_dage_tilbage` | days | Days left at the recent burn rate |
+| `binary_sensor.nbe_fyld_snart_paa` | | Refill soon: under 2 days left, or the estimate is zero |
+| `number.nbe_paafyldt_kg` | kg | Amount for the next refill record (default 144) |
+| `number.nbe_kalibrer_silo_niveau` | kg | Set the current silo level |
+| `button.nbe_registrer_paafyldning` | | Register a refill |
 
 Sensors that are not connected on your burner show unknown. The full list of controller values is in [docs/values.md](docs/values.md).
 
 <p align="center">
-  <img src="docs/img/device.png" alt="The NBE Black Star device in Home Assistant, with its sensors" width="520" />
+  <img src="docs/img/device.png" alt="The NBE Black Star device in Home Assistant, with its controls and sensors" width="520" />
 </p>
 
 ### Update interval
@@ -163,7 +172,8 @@ The controller is read every 60 seconds by default (configurable). A missed read
 ## Known Limitations
 
 - `Pellets in hopper` (`operating_data/content`) reports negative values on the test controller and is shown as unknown. It is not the "Magasinindhold" figure on the display, which tracks the pellet counter
-- The alarm entity is the controller flag `off_on_alarm`. It reads on while the burner runs, and during the no-fuel alarm it is neither on nor off, so it shows unknown. The V7 manual does not define it, so it is shown as a plain sensor and should not be used for notifications
+- The alarm entity is decoded from the controller flag and the operating state. It is on in the no-fuel alarm (state 20) and off while burning or on standby. Only that alarm is confirmed against the display, and the raw flag is kept in the `raw` attribute. Other alarm states are not recorded yet
+- The pellet silo estimate depends on your refill records. It learns its counter factor from each no-fuel alarm, and an empty alarm resets it to zero. Register every refill, and set the level with `Calibrate silo level` if it drifts
 - The operating state is a code. Its text mapping and the event log are not decoded yet
 - The pellet counter (kg) matches the burner display and the burner energy (about 4.6 kWh per kg). The V7 manual does not describe it
 - Tested on one Black Star 1016 with a V7 controller. Other models are not verified
