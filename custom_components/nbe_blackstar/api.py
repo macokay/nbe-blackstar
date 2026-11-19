@@ -1,13 +1,25 @@
 import ipaddress
 import re
 
+from .const import STATE_NO_FUEL
 from .reader import NON_NEGATIVE, NbeReader, as_number, clean_value
 
-__all__ = ["NbeReader", "as_number", "binary_value", "clean_value", "sensor_value", "validate_input"]
+__all__ = ["NbeReader", "alarm_value", "as_number", "binary_value", "clean_value", "sensor_value", "validate_input"]
 
 
 def binary_value(raw):
     return {"1": True, "0": False}.get(raw)
+
+
+def alarm_value(raw, state):
+    # off_on_alarm reads 1 while burning and 0 in standby. In the no-fuel alarm it reads neither
+    # (seen 2026-10-30 and 2026-11-18), so the operating state 20 decides the alarm; any other
+    # unexpected value stays unknown rather than raising a false alarm.
+    if as_number(state) == STATE_NO_FUEL:
+        return True
+    if raw in ("0", "1"):
+        return False
+    return None
 
 
 def sensor_value(resource, raw):

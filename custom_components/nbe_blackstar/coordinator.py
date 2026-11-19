@@ -1,13 +1,25 @@
 import asyncio
 import logging
+import time
 from datetime import timedelta
 
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity, DataUpdateCoordinator, UpdateFailed
 
-from .api import NbeReader
-from .const import CONF_DEVICE_NAME, CONF_LANG, CONF_SERIAL, DEFAULT_DEVICE_NAME, DEFAULT_LANG, DOMAIN
+from .api import NbeReader, as_number
+from .const import (
+    CONF_DEVICE_NAME,
+    CONF_LANG,
+    CONF_SERIAL,
+    COUNTER_RESOURCE,
+    DEFAULT_DEVICE_NAME,
+    DEFAULT_LANG,
+    DOMAIN,
+    HOPPER_SAVE_DELAY,
+    STATE_NO_FUEL,
+    STATE_RESOURCE,
+)
 
 log = logging.getLogger(__name__)
 
@@ -16,10 +28,12 @@ RETRY_DELAY = 2
 
 
 class NbeCoordinator(DataUpdateCoordinator):
-    def __init__(self, hass, entry, reader: NbeReader, interval: int):
+    def __init__(self, hass, entry, reader: NbeReader, interval: int, hopper, store):
         super().__init__(hass, log, config_entry=entry, name=DOMAIN, update_interval=timedelta(seconds=interval))
         self.reader = reader
         self.firmware = None
+        self.hopper = hopper
+        self._store = store
         self._failures = 0
 
     async def _async_update_data(self):
@@ -35,7 +49,36 @@ class NbeCoordinator(DataUpdateCoordinator):
         self._failures = 0
         if self.firmware is None:
             await self._retry_firmware()
+        self._track_silo(data)
         return data
+
+    def _track_silo(self, data):
+        counter = as_number(data.get(COUNTER_RESOURCE))
+        alarm = as_number(data.get(STATE_RESOURCE)) == STATE_NO_FUEL
+        self.hopper.update(counter, alarm, time.time())
+        self._store.async_delay_save(self.hopper.to_dict, HOPPER_SAVE_DELAY)
+
+    async def async_register_refill(self):
+        self.hopper.refill(self.hopper.refill_kg, self._counter(), time.time())
+        await self._saved_changed()
+
+    async def async_set_refill_kg(self, kg):
+        self.hopper.refill_kg = float(kg)
+        await self._saved_changed()
+
+    async def async_set_level(self, kg):
+        self.hopper.set_level(kg, self._counter(), time.time())
+        await self._saved_changed()
+
+    async def async_flush(self):
+        await self._store.async_save(self.hopper.to_dict())
+
+    def _counter(self):
+        return as_number((self.data or {}).get(COUNTER_RESOURCE))
+
+    async def _saved_changed(self):
+        self._store.async_delay_save(self.hopper.to_dict, HOPPER_SAVE_DELAY)
+        self.async_update_listeners()
 
     async def _poll(self):
         try:
@@ -64,9 +107,12 @@ class NbeEntity(CoordinatorEntity):
     _attr_has_entity_name = False
 
     def __init__(self, coordinator, entry, row):
-        super().__init__(coordinator)
         resource, _, object_id, name_da, name_en, *_ = row
         self._resource = resource
+        self._setup(coordinator, entry, object_id, name_da, name_en)
+
+    def _setup(self, coordinator, entry, object_id, name_da, name_en):
+        super().__init__(coordinator)
         serial = entry.data[CONF_SERIAL]
         self._attr_name = name_en if entry.options.get(CONF_LANG, DEFAULT_LANG) == "en" else name_da
         self._attr_unique_id = f"nbe_{serial}_{object_id}"
@@ -82,3 +128,10 @@ class NbeEntity(CoordinatorEntity):
     @property
     def _raw(self):
         return (self.coordinator.data or {}).get(self._resource)
+
+
+class HopperEntity(NbeEntity):
+    # entities computed from the silo estimate, not read from a controller resource
+    def __init__(self, coordinator, entry, object_id, name_da, name_en):
+        self._resource = None
+        self._setup(coordinator, entry, object_id, name_da, name_en)

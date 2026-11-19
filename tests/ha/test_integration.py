@@ -230,7 +230,7 @@ def test_manifest_hacs_and_translations():
     assert manifest["domain"] == "nbe_blackstar"
     assert manifest["config_flow"] is True
     assert manifest["iot_class"] == "local_polling"
-    assert manifest["requirements"] == ["pycryptodome==4.0.0"]
+    assert manifest["requirements"] == ["pycryptodome==4.4.0"]
     strings = json.load(open(os.path.join(COMPONENT, "strings.json")))
     for lang in ("en", "da"):
         translated = json.load(open(os.path.join(COMPONENT, "translations", lang + ".json")))

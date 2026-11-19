@@ -34,7 +34,9 @@
       "init": {
         "data": {
           "lang": "Sprog for enhedsnavne (da eller en)",
-          "scan_interval": "Sekunder mellem aflæsninger"
+          "scan_interval": "Sekunder mellem aflæsninger",
+          "hopper_capacity_kg": "Silo-kapacitet i kg (0 eller tomt = ingen grænse)",
+          "counter_factor": "Tællerenheder pr. kg (tomt = lært af påfyldninger, 1,0 når sneglen er kalibreret)"
         }
       }
     }

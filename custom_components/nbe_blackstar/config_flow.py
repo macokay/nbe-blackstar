@@ -5,7 +5,9 @@ from homeassistant.core import callback
 
 from .api import NbeReader, validate_input
 from .const import (
+    CONF_COUNTER_FACTOR,
     CONF_DEVICE_NAME,
+    CONF_HOPPER_CAPACITY,
     CONF_LANG,
     CONF_PINCODE,
     CONF_PORT,
@@ -20,11 +22,22 @@ from .const import (
 )
 
 
-def _options_schema(lang, interval):
+def _options_schema(lang, interval, capacity, factor):
+    # optional fields: a suggested value (not a default), so clearing the field removes the setting
     return {
         vol.Required(CONF_LANG, default=lang): vol.In(LANGS),
         vol.Required(CONF_SCAN_INTERVAL, default=interval): vol.All(int, vol.Range(min=10, max=3600)),
+        vol.Optional(CONF_HOPPER_CAPACITY, description=_suggest(capacity)): vol.All(
+            vol.Coerce(float), vol.Range(min=0, max=2000)
+        ),
+        vol.Optional(CONF_COUNTER_FACTOR, description=_suggest(factor)): vol.All(
+            vol.Coerce(float), vol.Range(min=0.8, max=2.0)
+        ),
     }
+
+
+def _suggest(value):
+    return None if value is None else {"suggested_value": value}
 
 
 def _try_connect(host, serial, pincode, port):
@@ -85,6 +98,11 @@ class NbeOptionsFlow(config_entries.OptionsFlow):
             return self.async_create_entry(data=user_input)
         options = self.config_entry.options
         schema = vol.Schema(
-            _options_schema(options.get(CONF_LANG, DEFAULT_LANG), options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL))
+            _options_schema(
+                options.get(CONF_LANG, DEFAULT_LANG),
+                options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL),
+                options.get(CONF_HOPPER_CAPACITY),
+                options.get(CONF_COUNTER_FACTOR),
+            )
         )
         return self.async_show_form(step_id="init", data_schema=schema)
