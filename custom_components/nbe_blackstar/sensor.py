@@ -21,7 +21,7 @@ class NbeSensor(NbeEntity, SensorEntity):
     def __init__(self, coordinator, entry, row):
         super().__init__(coordinator, entry, row)
         self.entity_id = f"sensor.nbe_{self._object_id}"
-        _, _, _, _, _, icon, state_class, device_class, unit = row
+        _, _, _, _, icon, state_class, device_class, unit = row
         self._attr_icon = _opt(icon)
         self._attr_state_class = SensorStateClass(state_class) if _opt(state_class) else None
         self._attr_device_class = SensorDeviceClass(device_class) if _opt(device_class) else None
@@ -40,8 +40,8 @@ class HopperLevelSensor(HopperEntity, SensorEntity):
     _attr_icon = "mdi:weight-kilogram"
 
     def __init__(self, coordinator, entry):
-        super().__init__(coordinator, entry, "pellets_tilbage", "Pellets tilbage", "Pellets left")
-        self.entity_id = "sensor.nbe_pellets_tilbage"
+        super().__init__(coordinator, entry, "pellets_left", "Pellets left")
+        self.entity_id = "sensor.nbe_pellets_left"
 
     @property
     def native_value(self):
@@ -64,8 +64,8 @@ class HopperDaysSensor(HopperEntity, SensorEntity):
     _attr_icon = "mdi:calendar-clock"
 
     def __init__(self, coordinator, entry):
-        super().__init__(coordinator, entry, "dage_tilbage", "Dage tilbage", "Days left")
-        self.entity_id = "sensor.nbe_dage_tilbage"
+        super().__init__(coordinator, entry, "days_left", "Days left")
+        self.entity_id = "sensor.nbe_days_left"
 
     @property
     def native_value(self):

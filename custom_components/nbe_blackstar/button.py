@@ -13,8 +13,8 @@ class HopperRefillButton(HopperEntity, ButtonEntity):
     _attr_icon = "mdi:gas-station"
 
     def __init__(self, coordinator, entry):
-        super().__init__(coordinator, entry, "registrer_paafyldning", "Registrér påfyldning", "Register refill")
-        self.entity_id = "button.nbe_registrer_paafyldning"
+        super().__init__(coordinator, entry, "register_refill", "Register refill")
+        self.entity_id = "button.nbe_register_refill"
 
     async def async_press(self):
         await self.coordinator.async_register_refill()

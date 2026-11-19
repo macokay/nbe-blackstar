@@ -28,7 +28,7 @@ Only one of them may run against the controller.
 
 1. Stop the bridge: `docker compose -f deploy/docker-compose.yml stop nbe`.
 2. In Home Assistant, Settings, Entities, filter on "unavailable" and delete the old `nbe_*` entities from the bridge.
-3. Remove the bridge's entries and add the NBE Black Star integration again, so the entities get clean ids without `_2`. The energy file `nbe_blackstar_energy_<serial>.json` is kept.
+3. Remove the bridge's entries and add the NBE Black Star integration again, so the entities get clean ids without `_2`. From the version after 0.0.13 the integration also renames its own Danish ids to English on the first start. The energy file `nbe_blackstar_energy_<serial>.json` is kept.
 4. Optional: to carry the old total forward, set `kwh` in the energy file to the old total plus the new one before the next restart.
 
 ## Rollback

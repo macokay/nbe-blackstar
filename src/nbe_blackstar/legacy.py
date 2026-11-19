@@ -1,0 +1,30 @@
+# Versions up to 0.0.13 used Danish names and object ids. MQTT topics and the discovery unique_id keep those old values, so a bridge
+# that is already running keeps its entities. Object ids and names are English, so new installs get English entity ids.
+# OBJECT_ID -> (old object id, old topic key)
+LEGACY = {
+    "boiler_temperature": ("kedel_temperatur", "kedeltemperatur"),
+    "boiler_target": ("kedel_maal", "kedel_ml"),
+    "hot_water": ("varmtvand", "varmtvand"),
+    "hot_water_target": ("varmtvand_maal", "varmtvand_ml"),
+    "floor_heating_flow": ("gulv_fremloeb", "gulvvarme_fremlb"),
+    "floor_heating_target": ("gulv_oensket", "gulvvarme_nsket"),
+    "shaft_temperature": ("skakt_temperatur", "skakttemperatur"),
+    "return_temperature": ("retur_temperatur", "returtemperatur"),
+    "flue_gas_temperature": ("rog_temperatur", "rgtemperatur"),
+    "current_draw": ("stromforbrug_ma", "strmforbrug_ma"),
+    "outdoor_temperature": ("udetemperatur", "udetemperatur"),
+    "burner_power": ("braendereffekt_kw", "brndereffekt"),
+    "burner_load": ("braenderbelastning", "brnderbelastning"),
+    "oxygen": ("ilt", "ilt"),
+    "oxygen_target": ("ilt_maal", "ilt_ml"),
+    "floor_valve": ("gulv_ventil", "gulvventil"),
+    "pellets_in_hopper": ("pellets_magasin", "pellets_i_magasin"),
+    "ash_box_minutes": ("askeskuffe_minutter", "askeskuffe_minutter"),
+    "operating_state": ("driftstilstand", "driftstilstand"),
+    "light_level": ("lysniveau", "lysniveau"),
+    "boiler_pump": ("kedelpumpe", "kedelpumpe"),
+    "floor_pump": ("gulvpumpe", "gulvpumpe"),
+    "alarm": ("alarm", "alarm"),
+    "pellet_consumption_counter": ("forbrug_teller", "pellet_forbrug_teller"),
+    "burner_energy": ("braender_energi_kwh", "brnderenergi"),
+}

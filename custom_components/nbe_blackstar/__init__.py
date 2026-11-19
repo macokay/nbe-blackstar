@@ -1,8 +1,10 @@
 import logging
+import re
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, EVENT_HOMEASSISTANT_STOP, Platform
 from homeassistant.core import Event, HomeAssistant
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.storage import Store
 
 from .api import NbeReader
@@ -17,6 +19,7 @@ from .const import (
     DOMAIN,
     ENERGY_FILE,
     HOPPER_STORE,
+    LEGACY_OBJECT_IDS,
 )
 from .coordinator import NbeCoordinator
 from .hopper import Hopper
@@ -54,8 +57,31 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             _LOGGER.warning("Unable to close reader on stop: %s", type(e).__name__)
 
     entry.async_on_unload(hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STOP, _close_on_stop))
+    _migrate_object_ids(hass, entry)
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
+
+
+def _migrate_object_ids(hass: HomeAssistant, entry: ConfigEntry) -> None:
+    # versions up to 0.0.13 used Danish object ids. Rename the registry entries once: unique_id always, and the entity id
+    # unless the user has given it another name or the English id is taken.
+    registry = er.async_get(hass)
+    prefix = f"nbe_{entry.data[CONF_SERIAL]}_"
+    for entity in er.async_entries_for_config_entry(registry, entry.entry_id):
+        if not entity.unique_id.startswith(prefix):
+            continue
+        old = entity.unique_id[len(prefix) :]
+        new = LEGACY_OBJECT_IDS.get(old)
+        if new is None:
+            continue
+        changes = {"new_unique_id": prefix + new}
+        target = f"{entity.domain}.nbe_{new}"
+        if re.fullmatch(rf"{entity.domain}\.nbe_{old}(_\d+)?", entity.entity_id) and registry.async_get(target) is None:
+            changes["new_entity_id"] = target
+        try:
+            registry.async_update_entity(entity.entity_id, **changes)
+        except ValueError as err:
+            _LOGGER.warning("Unable to rename %s to English ids: %s", entity.entity_id, err)
 
 
 async def _reload(hass: HomeAssistant, entry: ConfigEntry) -> None:

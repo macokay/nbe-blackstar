@@ -19,7 +19,11 @@ docker compose -f deploy/docker-compose.yml logs -f nbe
 
 The image runs as a non-root user and has a healthcheck. It is unhealthy if the controller has not answered for 5 minutes. Compose builds the image for your machine (amd64 or arm64). Release images for both architectures are published to `ghcr.io/macokay/nbe-blackstar`.
 
-Entities appear through MQTT discovery under the device name from your configuration (default `NBE Black Star`). Sensors use `sensor.nbe_<object_id>`, pumps and alarm use `binary_sensor.nbe_*`.
+Entities appear through MQTT discovery under the device name from your configuration (default `NBE Black Star`). Sensors use `sensor.nbe_<object_id>`, pumps and alarm use `binary_sensor.nbe_*`. Names and object ids are English.
+
+A bridge that ran before the English ids keeps its MQTT topics and discovery `unique_id`, so its existing entities keep their ids in Home Assistant. Only a new install gets the English ids. The setting `NBE_LANG` is gone.
+
+The pellet silo estimate (pellets left, days left, refill reminder, refill and calibrate controls) is only in the HACS integration. The bridge does not publish it.
 
 ## Configuration
 
@@ -40,7 +44,6 @@ Every setting comes from an environment variable. `config.json` is optional and 
 | `HA_PREFIX` | no | `homeassistant` | Home Assistant discovery prefix. |
 | `NBE_DEVICE_ID` | no | `nbe_<serial>` | Device id. Keeps entity topics stable when changed. |
 | `NBE_DEVICE_NAME` | no | `NBE Black Star` | Device name in Home Assistant. |
-| `NBE_LANG` | no | `da` | Entity names: `da` or `en`. Topics and entity ids do not change with the language. |
 | `NBE_DEBUG` | no | `false` | Debug logging. |
 | `NBE_ALLOW_WRITE` | no | unset | Leave unset. Writes are not implemented in this build. |
 

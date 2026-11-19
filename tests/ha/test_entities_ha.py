@@ -43,61 +43,103 @@ def fake_controller(monkeypatch):
     monkeypatch.setattr(api.NbeReader, "close", lambda self: None)
 
 
-def _entry(lang):
+def _entry():
     return MockConfigEntry(
         domain="nbe_blackstar",
         data={"host": "192.0.2.10", "serial": "123456", "pincode": "123456", "port": 8483},
-        options={"lang": lang},
     )
 
 
 async def test_entities_have_stable_ids_and_values(hass, fake_controller):
-    entry = _entry("da")
+    entry = _entry()
     entry.add_to_hass(hass)
     assert await async_setup_component(hass, "nbe_blackstar", {})
     await hass.async_block_till_done()
 
-    temp = hass.states.get("sensor.nbe_kedel_temperatur")
+    temp = hass.states.get("sensor.nbe_boiler_temperature")
     assert temp is not None
     assert temp.state == "70.6"
-    assert temp.attributes["friendly_name"].endswith("Kedeltemperatur")
+    assert temp.attributes["friendly_name"].endswith("Boiler temperature")
 
-    assert hass.states.get("binary_sensor.nbe_kedelpumpe").state == "on"
-    assert hass.states.get("binary_sensor.nbe_gulvpumpe").state == "off"
-    assert hass.states.get("sensor.nbe_forbrug_teller").state == "46555.4"
+    assert hass.states.get("binary_sensor.nbe_boiler_pump").state == "on"
+    assert hass.states.get("binary_sensor.nbe_floor_pump").state == "off"
+    assert hass.states.get("sensor.nbe_pellet_consumption_counter").state == "46555.4"
 
 
 async def test_not_connected_sensor_is_unknown_not_999(hass, fake_controller):
-    entry = _entry("da")
+    entry = _entry()
     entry.add_to_hass(hass)
     assert await async_setup_component(hass, "nbe_blackstar", {})
     await hass.async_block_till_done()
-    outdoor = hass.states.get("sensor.nbe_udetemperatur")
+    outdoor = hass.states.get("sensor.nbe_outdoor_temperature")
     assert outdoor is not None
     assert outdoor.state == "unknown"
 
 
-async def test_english_names_use_same_entity_ids(hass, fake_controller):
-    entry = _entry("en")
+async def test_old_danish_entity_ids_are_renamed_to_english(hass, fake_controller):
+    from homeassistant.helpers import entity_registry as er
+
+    entry = _entry()
+    entry.add_to_hass(hass)
+    registry = er.async_get(hass)
+
+    def old(uid, entity_id):
+        entity_id_name = entity_id.split(".", 1)[1]
+        return registry.async_get_or_create("sensor", "nbe_blackstar", "nbe_123456_" + uid, suggested_object_id=entity_id_name, config_entry=entry)
+
+    old("kedel_temperatur", "sensor.nbe_kedel_temperatur")  # default id
+    old("varmtvand", "sensor.nbe_varmtvand_2")  # the id was taken by the MQTT bridge entity
+    registry.async_get_or_create("sensor", "mqtt", "bridge-hot-water", suggested_object_id="nbe_varmtvand")
+    old("kedel_maal", "sensor.pillefyr_maal")  # the user chose the id
+    old("ilt_maal", "sensor.nbe_ilt_maal")  # the English id is taken by another entity
+    registry.async_get_or_create("sensor", "mqtt", "other", suggested_object_id="nbe_oxygen_target")
+
+    assert await async_setup_component(hass, "nbe_blackstar", {})
+    await hass.async_block_till_done()
+
+    def entity_id(uid):
+        return registry.async_get_entity_id("sensor", "nbe_blackstar", "nbe_123456_" + uid)
+
+    assert entity_id("boiler_temperature") == "sensor.nbe_boiler_temperature"
+    assert entity_id("hot_water") == "sensor.nbe_hot_water"
+    assert entity_id("boiler_target") == "sensor.pillefyr_maal"
+    assert entity_id("oxygen_target") == "sensor.nbe_ilt_maal"
+    for legacy in ("kedel_temperatur", "varmtvand", "kedel_maal", "ilt_maal"):
+        assert entity_id(legacy) is None
+    assert hass.states.get("sensor.nbe_boiler_temperature").state == "70.6"
+    assert hass.states.get("sensor.nbe_varmtvand") is None  # the bridge entity keeps its own id, ours moved
+    assert registry.async_get("sensor.nbe_varmtvand").platform == "mqtt"
+    # a second setup changes nothing
+    assert await hass.config_entries.async_reload(entry.entry_id)
+    await hass.async_block_till_done()
+    assert entity_id("boiler_temperature") == "sensor.nbe_boiler_temperature"
+
+
+async def test_new_installs_get_english_ids_for_the_silo_entities(hass, fake_controller):
+    entry = _entry()
     entry.add_to_hass(hass)
     assert await async_setup_component(hass, "nbe_blackstar", {})
     await hass.async_block_till_done()
-    temp = hass.states.get("sensor.nbe_kedel_temperatur")
-    assert temp is not None
-    assert temp.attributes["friendly_name"].endswith("Boiler temperature")
-
+    for entity_id in (
+        "sensor.nbe_pellets_left",
+        "sensor.nbe_days_left",
+        "binary_sensor.nbe_refill_soon",
+        "number.nbe_refill_amount",
+        "number.nbe_calibrate_silo_level",
+        "button.nbe_register_refill",
+    ):
+        assert hass.states.get(entity_id) is not None, entity_id
 
 
 async def test_device_name_comes_from_config(hass, fake_controller):
     entry = MockConfigEntry(
         domain="nbe_blackstar",
         data={"host": "192.0.2.10", "serial": "123456", "pincode": "123456", "port": 8483, "device_name": "Kedel"},
-        options={"lang": "da"},
     )
     entry.add_to_hass(hass)
     assert await async_setup_component(hass, "nbe_blackstar", {})
     await hass.async_block_till_done()
-    temp = hass.states.get("sensor.nbe_kedel_temperatur")
+    temp = hass.states.get("sensor.nbe_boiler_temperature")
     assert temp is not None
     assert temp.attributes["friendly_name"].startswith("Kedel ")
 
@@ -113,7 +155,7 @@ async def test_firmware_read_is_retried_after_failed_setup(hass, fake_controller
         return None if len(calls) <= 2 else "7.0680"
 
     monkeypatch.setattr(api.NbeReader, "read_firmware", read_firmware)
-    entry = _entry("da")
+    entry = _entry()
     entry.add_to_hass(hass)
     assert await async_setup_component(hass, "nbe_blackstar", {})
     await hass.async_block_till_done()
@@ -139,7 +181,7 @@ def controller_keep_close(monkeypatch):
 async def test_homeassistant_stop_flushes_energy_total(hass, controller_keep_close):
     from homeassistant.const import EVENT_HOMEASSISTANT_STOP
 
-    entry = _entry("da")
+    entry = _entry()
     entry.add_to_hass(hass)
     assert await async_setup_component(hass, "nbe_blackstar", {})
     await hass.async_block_till_done()
@@ -158,7 +200,7 @@ async def test_homeassistant_stop_flushes_energy_total(hass, controller_keep_clo
 async def test_stop_after_reload_flushes_once(hass, controller_keep_close, monkeypatch):
     from homeassistant.const import EVENT_HOMEASSISTANT_STOP
 
-    entry = _entry("da")
+    entry = _entry()
     entry.add_to_hass(hass)
     assert await async_setup_component(hass, "nbe_blackstar", {})
     await hass.async_block_till_done()

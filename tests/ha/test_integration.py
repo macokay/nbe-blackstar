@@ -183,17 +183,15 @@ def test_close_flushes_total_and_survives_flush_error(tmp_path, caplog):
 
 
 def test_entities_match_bridge_schema():
-    from nbe_blackstar.names import EN
-
     rows = [r for r in csv.reader(open(os.path.join(ROOT, "src", "nbe_blackstar", "nbe_schema"))) if r and not r[0].startswith("#")]
-    expected = [(r[0], r[2], r[8], r[3], EN[r[8]], r[4], r[5], r[6], r[7]) for r in rows]
+    expected = [(r[0], r[2], r[8], r[3], r[4], r[5], r[6], r[7]) for r in rows]
     assert list(const.ENTITIES) == expected
 
 
 def test_energy_entity_attributes():
     row = next(r for r in const.ENTITIES if r[0] == const.ENERGY_RESOURCE)
-    assert row[2] == "braender_energi_kwh"
-    assert row[6:] == ("total_increasing", "energy", "kWh")
+    assert row[2] == "burner_energy"
+    assert row[5:] == ("total_increasing", "energy", "kWh")
 
 
 def _component_trees():
@@ -232,8 +230,7 @@ def test_manifest_hacs_and_translations():
     assert manifest["iot_class"] == "local_polling"
     assert manifest["requirements"] == ["pycryptodome==4.4.0"]
     strings = json.load(open(os.path.join(COMPONENT, "strings.json")))
-    for lang in ("en", "da"):
-        translated = json.load(open(os.path.join(COMPONENT, "translations", lang + ".json")))
-        assert translated.keys() == strings.keys()
-        assert translated["config"]["error"].keys() == strings["config"]["error"].keys()
+    translated = json.load(open(os.path.join(COMPONENT, "translations", "en.json")))
+    assert translated == strings
+    assert os.listdir(os.path.join(COMPONENT, "translations")) == ["en.json"]
     assert json.load(open(os.path.join(ROOT, "hacs.json")))["render_readme"] is True

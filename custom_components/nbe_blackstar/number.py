@@ -20,8 +20,8 @@ class HopperLevelNumber(HopperEntity, NumberEntity):
     _attr_icon = "mdi:weight-kilogram"
 
     def __init__(self, coordinator, entry):
-        super().__init__(coordinator, entry, "kalibrer_silo_niveau", "Kalibrér silo niveau (kg)", "Calibrate silo level (kg)")
-        self.entity_id = "number.nbe_kalibrer_silo_niveau"
+        super().__init__(coordinator, entry, "calibrate_silo_level", "Calibrate silo level (kg)")
+        self.entity_id = "number.nbe_calibrate_silo_level"
         self._attr_native_max_value = coordinator.hopper.capacity_kg or MAX_SILO_KG
 
     @property
@@ -43,8 +43,8 @@ class HopperRefillNumber(HopperEntity, NumberEntity):
     _attr_icon = "mdi:package-variant-closed"
 
     def __init__(self, coordinator, entry):
-        super().__init__(coordinator, entry, "paafyldt_kg", "Påfyldt mængde (kg)", "Refill amount (kg)")
-        self.entity_id = "number.nbe_paafyldt_kg"
+        super().__init__(coordinator, entry, "refill_amount", "Refill amount (kg)")
+        self.entity_id = "number.nbe_refill_amount"
 
     @property
     def native_value(self):

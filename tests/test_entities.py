@@ -14,9 +14,9 @@ class RecordingClient:
         pass
 
 
-def _fresh_entities(monkeypatch, lang="da"):
+def _fresh_entities(monkeypatch):
     monkeypatch.setattr(nbe, "DataEntries", [])
-    monkeypatch.setattr(nbe.settings, "config", {"ha_prefix": "homeassistant", "debug": False, "lang": lang}, raising=False)
+    monkeypatch.setattr(nbe.settings, "config", {"ha_prefix": "homeassistant", "debug": False}, raising=False)
     client = RecordingClient()
     nbe.populate_resources(client)
     return client
@@ -52,31 +52,37 @@ def test_binary_value_maps_controller_flags():
     assert nbe.binary_value("x") == ""
 
 
-def test_discovery_uses_danish_name_and_ascii_entity_id(monkeypatch):
+def test_discovery_uses_english_name_and_entity_id_but_keeps_the_unique_id(monkeypatch):
     client = _fresh_entities(monkeypatch)
-    payload = _config_payload(client, "gulv_fremloeb")
-    assert payload["name"] == "Gulvvarme fremløb"
-    assert payload["unique_id"].endswith("_gulv_fremloeb")
+    payload = _config_payload(client, "floor_heating_flow")
+    assert payload["name"] == "Floor heating flow"
+    assert payload["default_entity_id"] == "sensor.nbe_floor_heating_flow"
+    assert payload["unique_id"].endswith("_gulv_fremloeb")  # unchanged, so a running bridge keeps its entity
     assert payload["device"]["identifiers"] == nbe.device.getId()
 
 
 def test_discovery_publishes_binary_sensor_for_pump(monkeypatch):
     client = _fresh_entities(monkeypatch)
-    payload = _config_payload(client, "kedelpumpe")
+    payload = _config_payload(client, "boiler_pump")
     assert payload["device_class"] == "running"
 
 
-def test_english_names_keep_topics_and_ids(monkeypatch):
-    da = _fresh_entities(monkeypatch, "da")
-    en = _fresh_entities(monkeypatch, "en")
-    assert [t for t, _, _ in da.published] == [t for t, _, _ in en.published]
-    assert _config_payload(da, "kedel_temperatur")["name"] == "Kedeltemperatur"
-    assert _config_payload(en, "kedel_temperatur")["name"] == "Boiler temperature"
-    assert _config_payload(da, "kedel_temperatur")["state_topic"] == _config_payload(en, "kedel_temperatur")["state_topic"]
-    assert _config_payload(da, "kedel_temperatur")["unique_id"] == _config_payload(en, "kedel_temperatur")["unique_id"]
+def _schema_rows():
+    path = nbe.os.path.join(nbe.os.path.dirname(nbe.__file__), "nbe_schema")
+    return [line.split(",") for line in open(path) if line.strip() and not line.startswith("#")]
 
 
-def test_every_schema_entity_has_an_english_name():
-    from nbe_blackstar.names import EN
-    rows = [line.split(",") for line in open(nbe.os.path.join(nbe.os.path.dirname(nbe.__file__), "nbe_schema")) if line.strip() and not line.startswith("#")]
-    assert {r[8].strip() for r in rows} == set(EN)
+def test_topics_and_unique_ids_keep_the_values_from_the_danish_names(monkeypatch):
+    client = _fresh_entities(monkeypatch)
+    for row in _schema_rows():
+        old_id, old_key = nbe.LEGACY[row[8].strip()]
+        payload = _config_payload(client, row[8].strip())
+        assert payload["unique_id"].endswith("_" + old_id)
+        assert "/" + old_key + "/" in payload["state_topic"] + "/"
+    assert any(t.endswith("/kedeltemperatur/config") for t, _, _ in client.published)
+
+
+def test_every_schema_entity_has_a_legacy_entry_and_ascii_english_names():
+    rows = _schema_rows()
+    assert {r[8].strip() for r in rows} == set(nbe.LEGACY)
+    assert all(r[3].isascii() and r[8].isascii() for r in rows)

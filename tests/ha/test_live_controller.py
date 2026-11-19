@@ -40,7 +40,6 @@ def _entry():
     return MockConfigEntry(
         domain="nbe_blackstar",
         data={"host": HOST, "serial": SERIAL, "pincode": PIN, "port": 8483},
-        options={"lang": "da"},
     )
 
 
@@ -49,12 +48,12 @@ async def test_live_entities_have_values_and_stable_ids(hass):
     entry.add_to_hass(hass)
     assert await async_setup_component(hass, "nbe_blackstar", {})
     await hass.async_block_till_done()
-    temp = hass.states.get("sensor.nbe_kedel_temperatur")
+    temp = hass.states.get("sensor.nbe_boiler_temperature")
     assert temp is not None and temp.state not in ("unknown", "unavailable")
     assert float(temp.state) > 0
-    assert hass.states.get("binary_sensor.nbe_kedelpumpe").state in ("on", "off")
-    assert hass.states.get("sensor.nbe_udetemperatur").state in ("unknown", "unavailable")
-    assert hass.states.get("sensor.nbe_braender_energi_kwh") is not None
+    assert hass.states.get("binary_sensor.nbe_boiler_pump").state in ("on", "off")
+    assert hass.states.get("sensor.nbe_outdoor_temperature").state in ("unknown", "unavailable")
+    assert hass.states.get("sensor.nbe_burner_energy") is not None
 
 
 async def test_live_reload_keeps_entities(hass):
@@ -66,5 +65,5 @@ async def test_live_reload_keeps_entities(hass):
     await hass.async_block_till_done()
     assert await hass.config_entries.async_setup(entry.entry_id)
     await hass.async_block_till_done()
-    assert hass.states.get("sensor.nbe_kedel_temperatur") is not None
-    assert hass.states.get("sensor.nbe_braender_energi_kwh") is not None
+    assert hass.states.get("sensor.nbe_boiler_temperature") is not None
+    assert hass.states.get("sensor.nbe_burner_energy") is not None

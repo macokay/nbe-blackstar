@@ -48,7 +48,7 @@ class Device:
 
 
 class Sensor:
-    def __init__(self, icon, device_class, unit_of_measurement, state_class, name, device, object_id, topic_key=None):
+    def __init__(self, icon, device_class, unit_of_measurement, state_class, name, device, object_id, topic_key=None, unique_suffix=None):
         if icon != "none":
             self.icon = icon
         if device_class != "none":
@@ -61,7 +61,7 @@ class Sensor:
         self.topic_key = topic_key or strip_invalid(name)
         self.state_topic = device.getUid() + "/sensor/" + self.topic_key + "/state"
         self.availability_topic = device.getUid() + "/bridge/state"
-        self.unique_id = device.getId() + "_" + object_id
+        self.unique_id = device.getId() + "_" + (unique_suffix or object_id)
         self.default_entity_id = "sensor.nbe_" + object_id
         self.device = device
         self.origin = ORIGIN
@@ -74,7 +74,7 @@ class Sensor:
 
 
 class BinarySensor:
-    def __init__(self, icon, device_class, name, device, object_id, topic_key=None):
+    def __init__(self, icon, device_class, name, device, object_id, topic_key=None, unique_suffix=None):
         if icon != "none":
             self.icon = icon
         if device_class != "none":
@@ -85,7 +85,7 @@ class BinarySensor:
         self.availability_topic = device.getUid() + "/bridge/state"
         self.payload_on = "ON"
         self.payload_off = "OFF"
-        self.unique_id = device.getId() + "_" + object_id
+        self.unique_id = device.getId() + "_" + (unique_suffix or object_id)
         self.default_entity_id = "binary_sensor.nbe_" + object_id
         self.device = device
         self.origin = ORIGIN

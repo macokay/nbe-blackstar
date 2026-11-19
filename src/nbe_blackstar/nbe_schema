@@ -1,27 +1,27 @@
 # RESOURCE,METHOD,TYPE,NAME,ICON,STATE-CLASS,DEVICE-CLASS,UNIT-OF-MEASUREMENT,OBJECT_ID
-# OBJECT_ID is the ASCII entity id suffix (sensor.nbe_<OBJECT_ID>), NAME is shown in Home Assistant.
-operating_data/boiler_temp,get,sensor,Kedeltemperatur,none,measurement,temperature,°C,kedel_temperatur
-operating_data/boiler_ref,get,sensor,Kedel mål,none,measurement,temperature,°C,kedel_maal
-operating_data/dhw_temp,get,sensor,Varmtvand,mdi:water-boiler,measurement,temperature,°C,varmtvand
-operating_data/dhw_ref,get,sensor,Varmtvand mål,mdi:water-boiler,measurement,temperature,°C,varmtvand_maal
-operating_data/forward_temp,get,sensor,Gulvvarme fremløb,mdi:heating-coil,measurement,temperature,°C,gulv_fremloeb
-operating_data/forward_ref,get,sensor,Gulvvarme ønsket,mdi:heating-coil,measurement,temperature,°C,gulv_oensket
-operating_data/shaft_temp,get,sensor,Skakttemperatur,none,measurement,temperature,°C,skakt_temperatur
-operating_data/return_temp,get,sensor,Returtemperatur,none,measurement,temperature,°C,retur_temperatur
-operating_data/smoke_temp,get,sensor,Røgtemperatur,none,measurement,temperature,°C,rog_temperatur
-operating_data/milli_ampere,get,sensor,Strømforbrug mA,mdi:current-ac,measurement,current,mA,stromforbrug_ma
-operating_data/external_temp,get,sensor,Udetemperatur,none,measurement,temperature,°C,udetemperatur
-operating_data/power_kw,get,sensor,Brændereffekt,mdi:flash,measurement,power,kW,braendereffekt_kw
-operating_data/power_pct,get,sensor,Brænderbelastning,mdi:percent,measurement,none,%,braenderbelastning
-operating_data/oxygen,get,sensor,Ilt,mdi:percent,measurement,none,%,ilt
-operating_data/oxygen_ref,get,sensor,Ilt mål,mdi:percent,measurement,none,%,ilt_maal
-operating_data/house_valve_state,get,sensor,Gulvventil,mdi:heating-coil,measurement,none,%,gulv_ventil
-operating_data/content,get,sensor,Pellets i magasin,mdi:weight-kilogram,measurement,none,kg,pellets_magasin
-operating_data/ashbox_minutes,get,sensor,Askeskuffe minutter,mdi:timer-outline,measurement,duration,min,askeskuffe_minutter
-operating_data/state,get,sensor,Driftstilstand,mdi:fire,measurement,none,none,driftstilstand
-operating_data/photo_level,get,sensor,Lysniveau,mdi:brightness-6,measurement,none,%,lysniveau
-operating_data/boiler_pump_state,get,binary_sensor,Kedelpumpe,mdi:pump,none,running,none,kedelpumpe
-operating_data/house_pump_state,get,binary_sensor,Gulvpumpe,mdi:pump,none,running,none,gulvpumpe
+# OBJECT_ID is the ASCII entity id suffix (sensor.nbe_<OBJECT_ID>), NAME is shown in Home Assistant. Both are English.
+operating_data/boiler_temp,get,sensor,Boiler temperature,none,measurement,temperature,°C,boiler_temperature
+operating_data/boiler_ref,get,sensor,Boiler target,none,measurement,temperature,°C,boiler_target
+operating_data/dhw_temp,get,sensor,Hot water,mdi:water-boiler,measurement,temperature,°C,hot_water
+operating_data/dhw_ref,get,sensor,Hot water target,mdi:water-boiler,measurement,temperature,°C,hot_water_target
+operating_data/forward_temp,get,sensor,Floor heating flow,mdi:heating-coil,measurement,temperature,°C,floor_heating_flow
+operating_data/forward_ref,get,sensor,Floor heating target,mdi:heating-coil,measurement,temperature,°C,floor_heating_target
+operating_data/shaft_temp,get,sensor,Shaft temperature,none,measurement,temperature,°C,shaft_temperature
+operating_data/return_temp,get,sensor,Return temperature,none,measurement,temperature,°C,return_temperature
+operating_data/smoke_temp,get,sensor,Flue gas temperature,none,measurement,temperature,°C,flue_gas_temperature
+operating_data/milli_ampere,get,sensor,Current draw,mdi:current-ac,measurement,current,mA,current_draw
+operating_data/external_temp,get,sensor,Outdoor temperature,none,measurement,temperature,°C,outdoor_temperature
+operating_data/power_kw,get,sensor,Burner power,mdi:flash,measurement,power,kW,burner_power
+operating_data/power_pct,get,sensor,Burner load,mdi:percent,measurement,none,%,burner_load
+operating_data/oxygen,get,sensor,Oxygen,mdi:percent,measurement,none,%,oxygen
+operating_data/oxygen_ref,get,sensor,Oxygen target,mdi:percent,measurement,none,%,oxygen_target
+operating_data/house_valve_state,get,sensor,Floor valve,mdi:heating-coil,measurement,none,%,floor_valve
+operating_data/content,get,sensor,Pellets in hopper,mdi:weight-kilogram,measurement,none,kg,pellets_in_hopper
+operating_data/ashbox_minutes,get,sensor,Ash box minutes,mdi:timer-outline,measurement,duration,min,ash_box_minutes
+operating_data/state,get,sensor,Operating state,mdi:fire,measurement,none,none,operating_state
+operating_data/photo_level,get,sensor,Light level,mdi:brightness-6,measurement,none,%,light_level
+operating_data/boiler_pump_state,get,binary_sensor,Boiler pump,mdi:pump,none,running,none,boiler_pump
+operating_data/house_pump_state,get,binary_sensor,Floor pump,mdi:pump,none,running,none,floor_pump
 operating_data/off_on_alarm,get,binary_sensor,Alarm,mdi:alert,none,none,none,alarm
-consumption_data/counter,get,sensor,Pellet forbrug teller,mdi:counter,total_increasing,weight,kg,forbrug_teller
-energy/burner_kwh,get,sensor,Brænderenergi,mdi:lightning-bolt,total_increasing,energy,kWh,braender_energi_kwh
+consumption_data/counter,get,sensor,Pellet consumption counter,mdi:counter,total_increasing,weight,kg,pellet_consumption_counter
+energy/burner_kwh,get,sensor,Burner energy,mdi:lightning-bolt,total_increasing,energy,kWh,burner_energy
