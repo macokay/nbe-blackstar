@@ -7,6 +7,8 @@ CONF_PINCODE = "pincode"
 CONF_PORT = "port"
 CONF_LANG = "lang"
 CONF_SCAN_INTERVAL = "scan_interval"
+CONF_HOPPER_CAPACITY = "hopper_capacity_kg"
+CONF_COUNTER_FACTOR = "counter_factor"
 
 CONF_DEVICE_NAME = "device_name"
 DEFAULT_DEVICE_NAME = "NBE Black Star"
@@ -16,6 +18,13 @@ DEFAULT_SCAN_INTERVAL = 60
 LANGS = ("da", "en")
 
 ENERGY_FILE = "nbe_blackstar_energy_{serial}.json"
+HOPPER_STORE = "nbe_blackstar_hopper_{serial}"
+HOPPER_SAVE_DELAY = 5
+HOPPER_SAVE_EVERY = 600
+COUNTER_RESOURCE = "consumption_data/counter"
+STATE_RESOURCE = "operating_data/state"
+# operating state 20 = no-fuel alarm ("ALARM INGEN ILD - BRÆNDSEL?")
+STATE_NO_FUEL = 20
 
 # (resource, type, object_id, name_da, name_en, icon, state_class, device_class, unit); mirrors src/nbe_blackstar/nbe_schema
 ENTITIES = (
