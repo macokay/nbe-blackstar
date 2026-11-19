@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.0.14
 - **Breaking: English only.** Entity ids and names are English, for example `sensor.nbe_boiler_temperature` instead of `sensor.nbe_kedel_temperatur`. The entity name language option (`da`/`en`) and the Danish translation are removed.
 - Existing installs: on the first start the integration renames its registry entries, both the `unique_id` and the entity id. An entity id is left alone if you gave it another name, or if the English id is taken by another entity. An id that had a `_2` suffix because the MQTT bridge held the name gets the clean English id.
 - Update dashboards, automations and scripts that use the old ids. Home Assistant does not rewrite them.
