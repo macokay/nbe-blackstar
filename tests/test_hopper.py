@@ -176,3 +176,21 @@ def test_ignition_failure_is_not_a_save_event():
     h = Hopper()
     h.refill(144, counter=5000.0, now=0)
     assert h.update(5001.0, alarm=True, now=1) is False
+
+
+def test_wrong_factor_does_not_lock_out_learning():
+    # true factor 1.20 while the default is 1.35: the estimate says 16 kg left at the alarm
+    h = Hopper()
+    h.update(0.0, alarm=True, now=0)
+    h.refill(144, counter=0.0, now=1)
+    h.update(0.0, alarm=False, now=2)
+    h.update(172.8, alarm=True, now=3)
+    assert h.factor_samples == pytest.approx([1.2])
+
+
+def test_capacity_counts_only_the_kg_that_fit():
+    h = Hopper(capacity_kg=150)
+    h.refill(144, counter=0.0, now=0)
+    h.refill(144, counter=0.0, now=1)
+    assert h.level_kg == 150
+    assert h.kg_since_empty == pytest.approx(150)

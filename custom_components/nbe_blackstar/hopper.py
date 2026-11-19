@@ -12,8 +12,9 @@ FACTOR_RANGE = (1.1, 1.7)
 FACTOR_SAMPLES = 3
 # counter rise after a refill below this is a failed ignition, not an empty silo
 MIN_COUNTER_RISE_FOR_EMPTY = 5.0
-# a factor sample is only taken when the estimate said the silo was nearly empty before the alarm
-EMPTY_CONFIRM_KG = 15.0
+# a factor sample is only taken when the estimate said the silo was nearly empty before the alarm.
+# Relative to the kg fed since the last empty, so a wrong factor cannot lock the sample out for good.
+EMPTY_CONFIRM_FRACTION = 0.15
 # burn rate is taken from the last 72 hours, at least 6 hours of data
 RATE_WINDOW_S = 72 * 3600
 RATE_MIN_SPAN_S = 6 * 3600
@@ -47,7 +48,7 @@ class Hopper:
         return statistics.median(self.factor_samples)
 
     def update(self, counter, alarm, now):
-        # returns True when the state changed in a way worth saving at once (an empty alarm or a rate sample)
+        # returns True when an empty alarm was accepted, so the state is saved at once
         if counter is None:
             return False
         self._advance(counter)
@@ -62,12 +63,13 @@ class Hopper:
         if counter is None:
             raise ValueError("no pellet counter reading yet")
         self._advance(counter)
-        level = (self.level_kg or 0.0) + kg
+        before = self.level_kg or 0.0
+        level = before + kg
         if self.capacity_kg:
             level = min(level, self.capacity_kg)
         self.level_kg = level
         self.counter_refill = counter
-        self.kg_since_empty += kg
+        self.kg_since_empty += level - before
         self.last_refill = {"ts": now, "kg": kg}
         self._sample(counter, now, force=True)
 
@@ -125,7 +127,7 @@ class Hopper:
         if ignition_failed:
             return False
         # the estimate just before the alarm: a sample is only trusted when the silo was nearly empty then
-        was_nearly_empty = self.level_kg is None or self.level_kg <= EMPTY_CONFIRM_KG
+        was_nearly_empty = self.level_kg is None or self.level_kg <= EMPTY_CONFIRM_FRACTION * self.kg_since_empty
         if was_nearly_empty and self.counter_at_empty is not None and self.kg_since_empty > 0 and counter > self.counter_at_empty:
             sample = (counter - self.counter_at_empty) / self.kg_since_empty
             if FACTOR_RANGE[0] <= sample <= FACTOR_RANGE[1]:
