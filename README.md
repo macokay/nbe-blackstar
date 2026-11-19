@@ -36,7 +36,7 @@
 - **Burner energy (kWh)** for the Home Assistant Energy dashboard, integrated from the burner power and kept across restarts
 - Pellet consumption counter (kg)
 - Pellet silo estimate with days left and a refill reminder, from the counter and your refill records
-- Entity names in Danish or English
+- English entity names and ids, for example `sensor.nbe_boiler_temperature`
 - Read-only: the integration never changes the burner
 - Talks to the controller on the local network, no cloud
 - A Docker/MQTT bridge is available as an alternative, see [docs/docker.md](docs/docker.md)
@@ -93,7 +93,6 @@ For MQTT, or a system other than Home Assistant, see [docs/docker.md](docs/docke
 | Serial number | Shown in menu 18 on the burner display |
 | Pincode | Shown in menu 18 on the burner display. Stored only in the config entry and never logged |
 | Port | Controller UDP port. Default `8483` |
-| Entity name language | `da` or `en` |
 | Device name | Default `NBE Black Star`. Entity names start with it, for example `NBE Black Star Boiler temperature` |
 
 <p align="center">
@@ -104,7 +103,6 @@ Post-setup options are available via **Configure** on the integration card:
 
 | Option | Description | Default |
 |---|---|---|
-| Entity name language | `da` or `en` | As entered at setup |
 | Seconds between reads | How often the controller is read (10 to 3600) | 60 |
 | Silo capacity (kg) | Optional, for the pellet silo estimate | Empty |
 | Counter factor | Optional override of the learned counter factor. Use 1.0 once the auger is calibrated on the controller | Learned |
@@ -117,37 +115,37 @@ Post-setup options are available via **Configure** on the integration card:
 
 | Entity | Unit | Description |
 |---|---|---|
-| `sensor.nbe_kedel_temperatur` | °C | Boiler temperature |
-| `sensor.nbe_kedel_maal` | °C | Boiler target |
-| `sensor.nbe_varmtvand` | °C | Hot water |
-| `sensor.nbe_varmtvand_maal` | °C | Hot water target |
-| `sensor.nbe_gulv_fremloeb` | °C | Floor heating flow |
-| `sensor.nbe_gulv_oensket` | °C | Floor heating target |
-| `sensor.nbe_skakt_temperatur` | °C | Shaft temperature |
-| `sensor.nbe_retur_temperatur` | °C | Return temperature |
-| `sensor.nbe_rog_temperatur` | °C | Flue gas temperature |
-| `sensor.nbe_udetemperatur` | °C | Outdoor temperature |
-| `sensor.nbe_braendereffekt_kw` | kW | Burner power |
-| `sensor.nbe_braenderbelastning` | % | Burner load |
-| `sensor.nbe_braender_energi_kwh` | kWh | Burner energy, for the Energy dashboard |
-| `sensor.nbe_ilt` | % | Oxygen |
-| `sensor.nbe_ilt_maal` | % | Oxygen target |
-| `sensor.nbe_gulv_ventil` | % | Floor valve |
-| `sensor.nbe_stromforbrug_ma` | mA | Current draw |
-| `sensor.nbe_lysniveau` | % | Light level |
-| `sensor.nbe_driftstilstand` | | Operating state (code) |
-| `sensor.nbe_pellets_magasin` | kg | Pellets in hopper |
-| `sensor.nbe_askeskuffe_minutter` | min | Ash box minutes |
-| `sensor.nbe_forbrug_teller` | kg | Pellet consumption counter |
-| `binary_sensor.nbe_kedelpumpe` | | Boiler pump |
-| `binary_sensor.nbe_gulvpumpe` | | Floor pump |
+| `sensor.nbe_boiler_temperature` | °C | Boiler temperature |
+| `sensor.nbe_boiler_target` | °C | Boiler target |
+| `sensor.nbe_hot_water` | °C | Hot water |
+| `sensor.nbe_hot_water_target` | °C | Hot water target |
+| `sensor.nbe_floor_heating_flow` | °C | Floor heating flow |
+| `sensor.nbe_floor_heating_target` | °C | Floor heating target |
+| `sensor.nbe_shaft_temperature` | °C | Shaft temperature |
+| `sensor.nbe_return_temperature` | °C | Return temperature |
+| `sensor.nbe_flue_gas_temperature` | °C | Flue gas temperature |
+| `sensor.nbe_outdoor_temperature` | °C | Outdoor temperature |
+| `sensor.nbe_burner_power` | kW | Burner power |
+| `sensor.nbe_burner_load` | % | Burner load |
+| `sensor.nbe_burner_energy` | kWh | Burner energy, for the Energy dashboard |
+| `sensor.nbe_oxygen` | % | Oxygen |
+| `sensor.nbe_oxygen_target` | % | Oxygen target |
+| `sensor.nbe_floor_valve` | % | Floor valve |
+| `sensor.nbe_current_draw` | mA | Current draw |
+| `sensor.nbe_light_level` | % | Light level |
+| `sensor.nbe_operating_state` | | Operating state (code) |
+| `sensor.nbe_pellets_in_hopper` | kg | Pellets in hopper |
+| `sensor.nbe_ash_box_minutes` | min | Ash box minutes |
+| `sensor.nbe_pellet_consumption_counter` | kg | Pellet consumption counter |
+| `binary_sensor.nbe_boiler_pump` | | Boiler pump |
+| `binary_sensor.nbe_floor_pump` | | Floor pump |
 | `binary_sensor.nbe_alarm` | | Alarm, on in the no-fuel alarm (see below) |
-| `sensor.nbe_pellets_tilbage` | kg | Estimated pellets left in the silo |
-| `sensor.nbe_dage_tilbage` | days | Days left at the recent burn rate |
-| `binary_sensor.nbe_fyld_snart_paa` | | Refill soon: under 2 days left, or the estimate is zero |
-| `number.nbe_paafyldt_kg` | kg | Amount for the next refill record (default 144) |
-| `number.nbe_kalibrer_silo_niveau` | kg | Set the current silo level |
-| `button.nbe_registrer_paafyldning` | | Register a refill |
+| `sensor.nbe_pellets_left` | kg | Estimated pellets left in the silo |
+| `sensor.nbe_days_left` | days | Days left at the recent burn rate |
+| `binary_sensor.nbe_refill_soon` | | Refill soon: under 2 days left, or the estimate is zero |
+| `number.nbe_refill_amount` | kg | Amount for the next refill record (default 144) |
+| `number.nbe_calibrate_silo_level` | kg | Set the current silo level |
+| `button.nbe_register_refill` | | Register a refill |
 
 Sensors that are not connected on your burner show unknown. The full list of controller values is in [docs/values.md](docs/values.md).
 
@@ -166,6 +164,8 @@ The controller is read every 60 seconds by default (configurable). A missed read
 **Via HACS:** HACS will notify you when an update is available. Click **Update** on the integration card.
 
 **Manual:** Replace the `custom_components/nbe_blackstar` folder with the new version and restart Home Assistant.
+
+**From 0.0.13 or earlier:** the entity ids were Danish (`sensor.nbe_kedel_temperatur`). On the first start after the update they are renamed to English (`sensor.nbe_boiler_temperature`), and the entity name language option is gone. Home Assistant does not rewrite dashboards, automations or scripts, so update the ids there. The full list of old and new ids is in [docs/CHANGELOG.md](docs/CHANGELOG.md).
 
 ---
 

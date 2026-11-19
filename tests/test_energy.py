@@ -46,7 +46,7 @@ def test_corrupt_file_starts_at_zero_with_warning(tmp_path, caplog):
 
 def test_refresh_publishes_burner_energy(monkeypatch):
     monkeypatch.setattr(nbe, "DataEntries", [])
-    monkeypatch.setattr(nbe.settings, "config", {"ha_prefix": "homeassistant", "debug": False, "lang": "en"}, raising=False)
+    monkeypatch.setattr(nbe.settings, "config", {"ha_prefix": "homeassistant", "debug": False}, raising=False)
     monkeypatch.setattr(nbe, "_reader", None)
     client = type("C", (), {"published": [], "subscribe": lambda self, t, qos=0: None})()
     client.publish = lambda topic, payload, qos=0, retain=False: client.published.append((topic, payload))

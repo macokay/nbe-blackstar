@@ -10,11 +10,9 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity, DataUpda
 from .api import NbeReader, as_number
 from .const import (
     CONF_DEVICE_NAME,
-    CONF_LANG,
     CONF_SERIAL,
     COUNTER_RESOURCE,
     DEFAULT_DEVICE_NAME,
-    DEFAULT_LANG,
     DOMAIN,
     HOPPER_SAVE_DELAY,
     HOPPER_SAVE_EVERY,
@@ -116,14 +114,14 @@ class NbeEntity(CoordinatorEntity):
     _attr_has_entity_name = False
 
     def __init__(self, coordinator, entry, row):
-        resource, _, object_id, name_da, name_en, *_ = row
+        resource, _, object_id, name, *_ = row
         self._resource = resource
-        self._setup(coordinator, entry, object_id, name_da, name_en)
+        self._setup(coordinator, entry, object_id, name)
 
-    def _setup(self, coordinator, entry, object_id, name_da, name_en):
+    def _setup(self, coordinator, entry, object_id, name):
         super().__init__(coordinator)
         serial = entry.data[CONF_SERIAL]
-        self._attr_name = name_en if entry.options.get(CONF_LANG, DEFAULT_LANG) == "en" else name_da
+        self._attr_name = name
         self._attr_unique_id = f"nbe_{serial}_{object_id}"
         self._object_id = object_id
         self._attr_device_info = DeviceInfo(
@@ -141,6 +139,6 @@ class NbeEntity(CoordinatorEntity):
 
 class HopperEntity(NbeEntity):
     # entities computed from the silo estimate, not read from a controller resource
-    def __init__(self, coordinator, entry, object_id, name_da, name_en):
+    def __init__(self, coordinator, entry, object_id, name):
         self._resource = None
-        self._setup(coordinator, entry, object_id, name_da, name_en)
+        self._setup(coordinator, entry, object_id, name)

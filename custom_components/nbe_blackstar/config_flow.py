@@ -8,24 +8,20 @@ from .const import (
     CONF_COUNTER_FACTOR,
     CONF_DEVICE_NAME,
     CONF_HOPPER_CAPACITY,
-    CONF_LANG,
     CONF_PINCODE,
     CONF_PORT,
     CONF_SCAN_INTERVAL,
     CONF_SERIAL,
     DEFAULT_DEVICE_NAME,
-    DEFAULT_LANG,
     DEFAULT_PORT,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
-    LANGS,
 )
 
 
-def _options_schema(lang, interval, capacity, factor):
+def _options_schema(interval, capacity, factor):
     # optional fields: a suggested value (not a default), so clearing the field removes the setting
     return {
-        vol.Required(CONF_LANG, default=lang): vol.In(LANGS),
         vol.Required(CONF_SCAN_INTERVAL, default=interval): vol.All(int, vol.Range(min=10, max=3600)),
         vol.Optional(CONF_HOPPER_CAPACITY, description=_suggest(capacity)): vol.All(
             vol.Coerce(float), vol.Range(min=0, max=2000)
@@ -72,7 +68,7 @@ class NbeConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     errors["base"] = "cannot_connect"
             if not errors:
                 data = {k: user_input[k] for k in (CONF_HOST, CONF_SERIAL, CONF_PINCODE, CONF_PORT, CONF_DEVICE_NAME)}
-                options = {CONF_LANG: user_input[CONF_LANG], CONF_SCAN_INTERVAL: DEFAULT_SCAN_INTERVAL}
+                options = {CONF_SCAN_INTERVAL: DEFAULT_SCAN_INTERVAL}
                 return self.async_create_entry(title=data[CONF_DEVICE_NAME], data=data, options=options)
         schema = vol.Schema(
             {
@@ -80,7 +76,6 @@ class NbeConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required(CONF_SERIAL): str,
                 vol.Required(CONF_PINCODE): str,
                 vol.Optional(CONF_PORT, default=DEFAULT_PORT): int,
-                vol.Required(CONF_LANG, default=DEFAULT_LANG): vol.In(LANGS),
                 vol.Optional(CONF_DEVICE_NAME, default=DEFAULT_DEVICE_NAME): str,
             }
         )
@@ -99,7 +94,6 @@ class NbeOptionsFlow(config_entries.OptionsFlow):
         options = self.config_entry.options
         schema = vol.Schema(
             _options_schema(
-                options.get(CONF_LANG, DEFAULT_LANG),
                 options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL),
                 options.get(CONF_HOPPER_CAPACITY),
                 options.get(CONF_COUNTER_FACTOR),

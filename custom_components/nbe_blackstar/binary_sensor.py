@@ -16,8 +16,8 @@ class NbeBinarySensor(NbeEntity, BinarySensorEntity):
     def __init__(self, coordinator, entry, row):
         super().__init__(coordinator, entry, row)
         self.entity_id = f"binary_sensor.nbe_{self._object_id}"
-        self._attr_icon = row[5]
-        self._attr_device_class = None if row[7] == "none" else BinarySensorDeviceClass(row[7])
+        self._attr_icon = row[4]
+        self._attr_device_class = None if row[6] == "none" else BinarySensorDeviceClass(row[6])
         if self._object_id == "alarm":
             # the alarm is now decoded from the flag and the operating state, so it can carry the problem class
             self._attr_device_class = BinarySensorDeviceClass.PROBLEM
@@ -43,8 +43,8 @@ class HopperLowBinarySensor(HopperEntity, BinarySensorEntity):
     _attr_icon = "mdi:gas-station-off"
 
     def __init__(self, coordinator, entry):
-        super().__init__(coordinator, entry, "fyld_snart_paa", "Fyld snart på", "Refill soon")
-        self.entity_id = "binary_sensor.nbe_fyld_snart_paa"
+        super().__init__(coordinator, entry, "refill_soon", "Refill soon")
+        self.entity_id = "binary_sensor.nbe_refill_soon"
 
     @property
     def is_on(self):

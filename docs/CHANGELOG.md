@@ -1,5 +1,44 @@
 # Changelog
 
+## Unreleased
+- **Breaking: English only.** Entity ids and names are English, for example `sensor.nbe_boiler_temperature` instead of `sensor.nbe_kedel_temperatur`. The entity name language option (`da`/`en`) and the Danish translation are removed.
+- Existing installs: on the first start the integration renames its registry entries, both the `unique_id` and the entity id. An entity id is left alone if you gave it another name, or if the English id is taken by another entity. An id that had a `_2` suffix because the MQTT bridge held the name gets the clean English id.
+- Update dashboards, automations and scripts that use the old ids. Home Assistant does not rewrite them.
+- Bridge: names and object ids are English (`NBE_LANG` is gone). MQTT topics and the discovery `unique_id` are unchanged, so a running bridge keeps its entities and their ids. Only a new bridge install gets the English entity ids.
+
+| Old id (after `nbe_`) | New id (after `nbe_`) |
+|---|---|
+| `kedel_temperatur` | `boiler_temperature` |
+| `kedel_maal` | `boiler_target` |
+| `varmtvand` | `hot_water` |
+| `varmtvand_maal` | `hot_water_target` |
+| `gulv_fremloeb` | `floor_heating_flow` |
+| `gulv_oensket` | `floor_heating_target` |
+| `skakt_temperatur` | `shaft_temperature` |
+| `retur_temperatur` | `return_temperature` |
+| `rog_temperatur` | `flue_gas_temperature` |
+| `stromforbrug_ma` | `current_draw` |
+| `udetemperatur` | `outdoor_temperature` |
+| `braendereffekt_kw` | `burner_power` |
+| `braenderbelastning` | `burner_load` |
+| `ilt` | `oxygen` |
+| `ilt_maal` | `oxygen_target` |
+| `gulv_ventil` | `floor_valve` |
+| `pellets_magasin` | `pellets_in_hopper` |
+| `askeskuffe_minutter` | `ash_box_minutes` |
+| `driftstilstand` | `operating_state` |
+| `lysniveau` | `light_level` |
+| `kedelpumpe` | `boiler_pump` |
+| `gulvpumpe` | `floor_pump` |
+| `forbrug_teller` | `pellet_consumption_counter` |
+| `braender_energi_kwh` | `burner_energy` |
+| `pellets_tilbage` | `pellets_left` |
+| `dage_tilbage` | `days_left` |
+| `fyld_snart_paa` | `refill_soon` |
+| `kalibrer_silo_niveau` | `calibrate_silo_level` |
+| `paafyldt_kg` | `refill_amount` |
+| `registrer_paafyldning` | `register_refill` |
+
 ## 0.0.13
 - Pellet silo estimate: `sensor.nbe_pellets_tilbage` (kg left) and `sensor.nbe_dage_tilbage` (days left at the recent burn rate). The estimate starts from a calibrated level and runs down with the counter. It learns the counter's kg factor from each no-fuel alarm (the counter counts about 1.35 units per kg on this controller), and an empty alarm resets it to zero.
 - `binary_sensor.nbe_fyld_snart_paa` ("Refill soon") turns on under 2 days of burning, or when the estimate reaches zero.

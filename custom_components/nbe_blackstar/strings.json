@@ -9,7 +9,6 @@
           "serial": "Serial number",
           "pincode": "Pincode",
           "port": "Port",
-          "lang": "Entity name language (da or en)",
           "device_name": "Device name"
         },
         "data_description": {
@@ -33,7 +32,6 @@
     "step": {
       "init": {
         "data": {
-          "lang": "Entity name language (da or en)",
           "scan_interval": "Seconds between reads",
           "hopper_capacity_kg": "Silo capacity in kg (0 or empty = no limit)",
           "counter_factor": "Counter units per kg (empty = learned from refills, 1.0 once the auger is calibrated)"
