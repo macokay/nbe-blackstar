@@ -1,3 +1,3 @@
 """NBE Black Star (Blackstar+, RTB) pellet burner bridge for Home Assistant."""
 
-__version__ = "0.0.14"
+__version__ = "0.0.15"
